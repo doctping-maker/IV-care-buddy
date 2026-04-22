@@ -294,14 +294,13 @@ input,select,textarea,button{font-family:'Kanit',sans-serif}
 <div id="markUI" class="hidden">
 <div class="cd">
 <div class="cd-t">✏️ วงบริเวณผิดปกติ</div>
-<div id="autoDetBox"><div class="al g" style="font-size:11px">🤖 <b>กำลังตรวจหา Lesion อัตโนมัติ...</b></div></div>
+<div id="autoDetBox"><div class="al y" style="font-size:12px"><b>👆 ลากนิ้ววาดรอบบริเวณผิดปกติ</b> เพื่อวัดขนาด Lesion</div></div>
 <div id="liveMeasure" class="hidden" style="background:linear-gradient(135deg,rgba(0,120,90,.06),rgba(45,156,219,.04));border:1.5px solid rgba(0,120,90,.2);border-radius:var(--rs);padding:10px 12px;margin-bottom:8px;text-align:center">
 <div style="font-size:9px;font-weight:700;color:var(--dm);text-transform:uppercase;letter-spacing:.5px">📐 ขนาด Lesion</div>
 <div id="liveMeasureVal" style="font-size:22px;font-weight:800;color:var(--ac);font-family:monospace;margin:2px 0">-- mm</div>
 <div id="liveMeasureDetail" style="font-size:10px;color:var(--dm)"></div>
 </div>
 <div class="dbar">
-<button class="dbtn" onclick="autoDetect()">🤖 ตรวจซ้ำ</button>
 <button class="dbtn" id="btnConfirmOval" onclick="confirmOval()">✅ ยืนยันวง</button>
 <button class="dbtn" onclick="clearOval()">🗑 ลบ</button>
 <button class="dbtn" onclick="retake()">📷 ถ่ายใหม่</button>
@@ -1034,13 +1033,13 @@ function onPhoto(inp){
   };rd.readAsDataURL(f);
 }
 function renderOvalUI(){
-  ovalData=null;autoDetectResult=null;window._contourPts=null;window._freehandPts=null;ovalConfirmed=false;
+  ovalData=null;window._contourPts=null;window._freehandPts=null;ovalConfirmed=false;
   $("phBox").innerHTML='<div style="display:flex"><div class="ph-wrap" id="phW" style="flex:1;position:relative;border-radius:var(--r);overflow:hidden;background:#000"><img id="phI" src="'+photoData+'" style="width:100%;display:block"><canvas id="phC" style="position:absolute;top:0;left:0;width:100%;height:100%;touch-action:none"></canvas></div><div style="min-width:36px;display:flex;align-items:center;justify-content:center;color:var(--dm);font-size:9px;writing-mode:vertical-rl;opacity:.4;user-select:none">⬇ เลื่อนลง</div></div>';
   $("markUI").classList.remove("hidden");$("scrollHandle").classList.remove("hidden");$("liveMeasure").classList.add("hidden");
   const btn=$("btnConfirmOval");if(btn){btn.textContent="✅ ยืนยันวง";btn.style.background="";btn.style.borderColor="";btn.style.color=""}
   const img=$("phI"),cvs=$("phC");
   function sz(){cvs.width=img.clientWidth;cvs.height=img.clientHeight;window._phDisplayW=img.clientWidth;window._phDisplayH=img.clientHeight}
-  img.onload=function(){sz();setTimeout(autoDetect,300)};if(img.complete){sz();setTimeout(autoDetect,300)}
+  img.onload=function(){sz()};if(img.complete){sz()}
   let drawing=false,fhPts=[];
   cvs.ontouchstart=cvs.onmousedown=function(e){e.preventDefault();drawing=true;fhPts=[];const p=gp(e,cvs);fhPts.push(p)};
   cvs.ontouchmove=cvs.onmousemove=function(e){if(!drawing)return;e.preventDefault();const p=gp(e,cvs);fhPts.push(p);drawFreehand(fhPts,true)};
@@ -1099,99 +1098,13 @@ function drawFreehand(pts,isDrawing){
 }
 let ovalConfirmed=false;
 function confirmOval(){if(!ovalData){toast('ยังไม่ได้วงบริเวณผิดปกติ — ลากนิ้วบนภาพก่อน','warning');return}ovalConfirmed=true;$("btnConfirmOval").textContent="✅ บันทึกแล้ว!";$("btnConfirmOval").style.background="var(--gn)";$("btnConfirmOval").style.borderColor="var(--gn)";$("btnConfirmOval").style.color="#fff";showOvalMeasure();toast('บันทึกวงเรียบร้อย','success')}
-let autoDetectResult=null;
-// ══════ AUTO-DETECT (Skin-segmented, mm) ══════
-function _isSkinPixel(r,g,b){
-  // HSV-based skin detection — works across skin tones
-  const max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;
-  if(max<30)return false; // too dark (black bg)
-  if(min>220&&d<20)return false; // white/bright bg
-  const s=max===0?0:d/max;
-  let h=0;if(d>0){if(max===r)h=((g-b)/d)%6;else if(max===g)h=(b-r)/d+2;else h=(r-g)/d+4;h*=60;if(h<0)h+=360}
-  // Skin hue: 0-50° (pink-orange-yellow range)
-  const skinHue=(h>=0&&h<=50)||(h>=330&&h<=360);
-  const skinSat=s>=0.1&&s<=0.75;
-  const skinVal=max>=40&&max<=240;
-  // Additional RGB rule for dark skin tones
-  const rgbSkin=(r>60&&r>g&&g>b&&r-b>15);
-  return (skinHue&&skinSat&&skinVal)||rgbSkin;
-}
-function autoDetect(){
-  const img=$("phI"),cvs=$("phC");if(!img||!cvs)return;
-  const adBox=$("autoDetBox");
-  adBox.innerHTML='<div class="al g" style="font-size:11px">🤖 <b>กำลังวิเคราะห์ภาพ...</b></div>';
-  const tc=document.createElement("canvas");const w=img.naturalWidth||img.clientWidth,h=img.naturalHeight||img.clientHeight;tc.width=w;tc.height=h;const tctx=tc.getContext("2d");
-  const imgEl=new Image();imgEl.src=photoData;
-  try{tctx.drawImage(imgEl,0,0,w,h)}catch(e){adBox.innerHTML='<div class="al y">⚠️ วิเคราะห์สีไม่ได้ — วงด้วยมือ</div>';return}
-  try{
-    const data=tctx.getImageData(0,0,w,h).data;
-    const grid=5;
-    let skinPx=[],abnormals=[];
-    // Step 1: Build skin mask + find abnormal regions ON SKIN ONLY
-    for(let py=0;py<h;py+=grid){for(let px=0;px<w;px+=grid){
-      const i=(py*w+px)*4;const r=data[i],g=data[i+1],b=data[i+2];
-      if(!_isSkinPixel(r,g,b))continue;
-      skinPx.push({x:px,y:py});
-      // Score abnormality on this skin pixel
-      let sc=0;
-      const max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;
-      // Redness (erythema)
-      if(r>130&&r>g*1.4&&r>b*1.3)sc+=3;
-      if(r>100&&(r-g)>40&&(r-b)>30)sc+=2;
-      // Purple/bruise
-      if(r>70&&b>60&&g<r*0.7&&b>g*0.85)sc+=3;
-      // Dark necrotic
-      if(r<90&&g<75&&b<65&&r+g+b<200&&r+g+b>60)sc+=2;
-      // Blanching (very pale skin patch)
-      if(r>180&&g>170&&b>160&&d<20)sc+=1;
-      // Swelling (shiny, lighter than surrounding)
-      if(r>160&&g>140&&b>120&&d<40&&r>g)sc+=1;
-      if(sc>=2)abnormals.push({x:px,y:py,sc});
-    }}
-    const minPixels=12;
-    if(abnormals.length<minPixels||skinPx.length<50){
-      autoDetectResult=null;
-      adBox.innerHTML='<div class="al g" style="font-size:11px"><b>✅ ไม่พบ Lesion อัตโนมัติ</b><br>👆 ลากนิ้ววงบริเวณผิดปกติด้วยตนเอง</div>';
-      $("manualOvalHint").classList.remove("hidden");return;
-    }
-    // Step 2: Cluster abnormal pixels (grid-based)
-    const cellSize=Math.max(w,h)/12;let cells={};
-    abnormals.forEach(a=>{const cx=Math.floor(a.x/cellSize),cy=Math.floor(a.y/cellSize),key=cx+','+cy;if(!cells[key])cells[key]={count:0,totalSc:0,pixels:[]};cells[key].count++;cells[key].totalSc+=a.sc;cells[key].pixels.push(a)});
-    let bestKey=null,bestScore=0;
-    Object.keys(cells).forEach(k=>{const s=cells[k].totalSc;if(s>bestScore){bestScore=s;bestKey=k}});
-    if(!bestKey)return;
-    const [bcx,bcy]=bestKey.split(',').map(Number);let clusterPixels=[];
-    for(let dx=-1;dx<=1;dx++){for(let dy=-1;dy<=1;dy++){const nk=(bcx+dx)+','+(bcy+dy);if(cells[nk])clusterPixels=clusterPixels.concat(cells[nk].pixels)}}
-    if(clusterPixels.length<6)return;
-    const cxs=clusterPixels.map(a=>a.x),cys=clusterPixels.map(a=>a.y);
-    const mnX=Math.min(...cxs),mxX=Math.max(...cxs),mnY=Math.min(...cys),mxY=Math.max(...cys);
-    let bw=mxX-mnX,bh=mxY-mnY;
-    const minW=w*0.06,minH=h*0.06;if(bw<minW)bw=minW;if(bh<minH)bh=minH;
-    const sx=cvs.width/w,sy=cvs.height/h,pd=.18;
-    const centerX=(mnX+mxX)/2,centerY=(mnY+mxY)/2;
-    const ow=bw*sx*(1+pd*2),oh=bh*sy*(1+pd*2);
-    const ox=centerX*sx-ow/2,oy=centerY*sy-oh/2;
-    const avg=clusterPixels.reduce((s,a)=>s+a.sc,0)/clusterPixels.length;
-    let sev,sevC,sevL;
-    if(avg>=2.5){sev="severe";sevC="#ff3860";sevL="🔴 รุนแรง — สีแดง/ม่วง/ดำ ชัดเจน"}
-    else if(avg>=1.5){sev="moderate";sevC="#ff9f43";sevL="🟠 ปานกลาง — สีแดงหรือเปลี่ยนสี"}
-    else{sev="mild";sevC="#feca57";sevL="🟡 เล็กน้อย — สีเปลี่ยนเล็กน้อย"}
-    autoDetectResult={sevC,sevL,avg,count:clusterPixels.length};
-    const contourPts=clusterPixels.map(p=>({x:p.x*sx,y:p.y*sy}));window._contourPts=contourPts;
-    ovalData={x:Math.max(0,ox),y:Math.max(0,oy),w:Math.min(ow,cvs.width-ox),h:Math.min(oh,cvs.height-oy)};
-    drawOval();showOvalMeasure();
-    const scale=parseFloat(V("fScale"))||5;
-    const wmm=(ow/scale).toFixed(0),hmm=(oh/scale).toFixed(0),maxD=Math.max(parseFloat(wmm),parseFloat(hmm));
-    adBox.innerHTML='<div class="al '+(sev==="severe"?"r":sev==="moderate"?"y":"g")+'" style="font-size:11px"><b>🤖 ตรวจพบ Lesion บนผิวหนัง</b><br>'+sevL+'<br>📐 <b>'+wmm+' × '+hmm+' mm</b> (⌀'+maxD+'mm)<br>👆 กด "✅ ยืนยันวง" หรือลากนิ้ววงใหม่</div>';
-    toast('ตรวจพบ Lesion — '+wmm+'×'+hmm+' mm','info');
-  }catch(e){adBox.innerHTML='<div class="al y">⚠️ วิเคราะห์สีไม่ได้ — วงด้วยมือ</div>'}
-}
+// ══════ MANUAL LESION MARKING (freehand draw + measure) ══════
 function gp(e,cvs){const r=cvs.getBoundingClientRect(),t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top}}
 function convexHull(pts){if(pts.length<3)return pts;pts.sort((a,b)=>a.x-b.x||a.y-b.y);const cross=(o,a,b)=>(a.x-o.x)*(b.y-o.y)-(a.y-o.y)*(b.x-o.x);const lower=[];for(const p of pts){while(lower.length>=2&&cross(lower[lower.length-2],lower[lower.length-1],p)<=0)lower.pop();lower.push(p)}const upper=[];for(let i=pts.length-1;i>=0;i--){const p=pts[i];while(upper.length>=2&&cross(upper[upper.length-2],upper[upper.length-1],p)<=0)upper.pop();upper.push(p)}lower.pop();upper.pop();return lower.concat(upper)}
 function smoothPath(ctx,pts,tension=0.3){if(pts.length<3){pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));return}ctx.moveTo(pts[0].x,pts[0].y);for(let i=0;i<pts.length;i++){const p0=pts[(i-1+pts.length)%pts.length],p1=pts[i],p2=pts[(i+1)%pts.length],p3=pts[(i+2)%pts.length];ctx.bezierCurveTo(p1.x+(p2.x-p0.x)*tension,p1.y+(p2.y-p0.y)*tension,p2.x-(p3.x-p1.x)*tension,p2.y-(p3.y-p1.y)*tension,p2.x,p2.y)}ctx.closePath()}
 function drawOval(){
   const cvs=$("phC");if(!cvs||!ovalData)return;const ctx=cvs.getContext("2d");ctx.clearRect(0,0,cvs.width,cvs.height);
-  const{x,y,w,h}=ovalData;const col=autoDetectResult?autoDetectResult.sevC:"#ff3860";const pts=window._contourPts;
+  const{x,y,w,h}=ovalData;const col="#ff3860";const pts=window._contourPts;
   ctx.fillStyle="rgba(0,0,0,.2)";ctx.fillRect(0,0,cvs.width,cvs.height);
   if(pts&&pts.length>5){const hull=convexHull(pts);ctx.save();ctx.beginPath();smoothPath(ctx,hull,0.4);ctx.clip();ctx.clearRect(0,0,cvs.width,cvs.height);ctx.restore();ctx.beginPath();smoothPath(ctx,hull,0.4);ctx.strokeStyle=col;ctx.lineWidth=3;ctx.setLineDash([8,4]);ctx.stroke();ctx.setLineDash([]);ctx.beginPath();smoothPath(ctx,hull,0.4);ctx.strokeStyle=col+"66";ctx.lineWidth=8;ctx.stroke()}
   else{ctx.save();ctx.beginPath();ctx.ellipse(x+w/2,y+h/2,w/2,h/2,0,0,Math.PI*2);ctx.clip();ctx.clearRect(0,0,cvs.width,cvs.height);ctx.restore();ctx.beginPath();ctx.ellipse(x+w/2,y+h/2,w/2,h/2,0,0,Math.PI*2);ctx.strokeStyle=col;ctx.lineWidth=3;ctx.setLineDash([8,4]);ctx.stroke();ctx.setLineDash([])}
@@ -1210,17 +1123,16 @@ function showOvalMeasure(){
   const wcm=(ovalData.w/scale/10).toFixed(1),hcm=(ovalData.h/scale/10).toFixed(1);
   // Main measure display
   let html="📐 <b>"+wmm+" × "+hmm+" mm</b> (⌀"+maxD+"mm)";
-  if(autoDetectResult)html+='<br><span style="color:'+autoDetectResult.sevC+';font-size:10px">'+autoDetectResult.sevL+'</span>';
   $("ovalMeasure").innerHTML=html;
   // Big live measure card
   $("liveMeasure").classList.remove("hidden");
   $("liveMeasureVal").textContent=wmm+" × "+hmm+" mm";
-  $("liveMeasureDetail").textContent="⌀ "+maxD+"mm | "+wcm+" × "+hcm+" cm"+(autoDetectResult?" | "+autoDetectResult.sevL.split('—')[0]:"");
+  $("liveMeasureDetail").textContent="⌀ "+maxD+"mm | "+wcm+" × "+hcm+" cm";
   // Auto-fill edema field (in cm)
   $("fEd").value=Math.max(parseFloat(wcm),parseFloat(hcm));
 }
-function clearOval(){ovalData=null;autoDetectResult=null;ovalConfirmed=false;window._freehandPts=null;window._contourPts=null;const c=$("phC");if(c)c.getContext("2d").clearRect(0,0,c.width,c.height);$("ovalMeasure").textContent="-- ยังไม่ได้วง --";const ab=$("autoDetBox");if(ab)ab.innerHTML='<div class="al y" style="font-size:12px"><b>👆 ลากนิ้ววาดรอบบริเวณผิดปกติ</b></div>';const btn=$("btnConfirmOval");if(btn){btn.textContent="✅ ยืนยันวง";btn.style.background="";btn.style.borderColor="";btn.style.color=""}}
-function retake(){photoData=null;ovalData=null;autoDetectResult=null;$("phBox").innerHTML='<div style="display:flex;gap:10px;justify-content:center"><div class="ph-empty" onclick="$(\'camIn\').click()" style="flex:1;padding:24px 10px"><div style="font-size:38px">📷</div><div style="font-size:12px;font-weight:600;margin-top:6px">ถ่ายรูป</div></div><div class="ph-empty" onclick="$(\'galIn\').click()" style="flex:1;padding:24px 10px"><div style="font-size:38px">🖼️</div><div style="font-size:12px;font-weight:600;margin-top:6px">เลือกจากคลัง</div></div></div>';$("markUI").classList.add("hidden");$("camIn").value="";$("galIn").value=""}
+function clearOval(){ovalData=null;ovalConfirmed=false;window._freehandPts=null;window._contourPts=null;const c=$("phC");if(c)c.getContext("2d").clearRect(0,0,c.width,c.height);$("ovalMeasure").textContent="-- ยังไม่ได้วง --";const ab=$("autoDetBox");if(ab)ab.innerHTML='<div class="al y" style="font-size:12px"><b>👆 ลากนิ้ววาดรอบบริเวณผิดปกติ</b> เพื่อวัดขนาด Lesion</div>';const btn=$("btnConfirmOval");if(btn){btn.textContent="✅ ยืนยันวง";btn.style.background="";btn.style.borderColor="";btn.style.color=""}}
+function retake(){photoData=null;ovalData=null;$("phBox").innerHTML='<div style="display:flex;gap:10px;justify-content:center"><div class="ph-empty" onclick="$(\'camIn\').click()" style="flex:1;padding:24px 10px"><div style="font-size:38px">📷</div><div style="font-size:12px;font-weight:600;margin-top:6px">ถ่ายรูป</div></div><div class="ph-empty" onclick="$(\'galIn\').click()" style="flex:1;padding:24px 10px"><div style="font-size:38px">🖼️</div><div style="font-size:12px;font-weight:600;margin-top:6px">เลือกจากคลัง</div></div></div>';$("markUI").classList.add("hidden");$("camIn").value="";$("galIn").value=""}
 
 // ══════ FACES ══════
 function buildFaces(){const r=$("faceR");FACES.forEach(f=>{const d=document.createElement("div");d.className="face";d.innerHTML='<span class="face-e">'+f.e+'</span><span class="face-n">'+f.n+'</span>';d.onclick=()=>selPain(f.n);r.appendChild(d)})}
@@ -1303,7 +1215,7 @@ function calcGrade(){
   if(grade>=3){mgmt.push("🛑 หยุดให้ยา/สารน้ำทันที");mgmt.push("💉 ยังไม่ดึงเข็ม — ใช้ syringe ดูดยาออก → แล้วดึงเข็ม");mgmt.push("🚫 ห้ามกดคลึงบริเวณที่รั่วซึม");mgmt.push("📞 รายงานแพทย์เจ้าของไข้ทันที")}
   if(grade>=2)mgmt.push("🔄 เปลี่ยนตำแหน่ง IV ใหม่");
   if(drugMatch&&drugMatch.antidote&&drugMatch.antidote!=="-")mgmt.push("🧪 Antidote: "+drugMatch.antidote);
-  if(drugMatch&&drugMatch.compress){const ct=drugMatch.compress==="warm"?"🔴 ประคบอุ่น 15 นาที วันละ 4 ครั้ง 1-2 วัน":drugMatch.compress==="cold"?"🔵 ประคบเย็น 15 นาที วันละ 4 ครั้ง 1-2 วัน":"🟡 ประคบร้อนหรือเย็นตามอาการ 15 นาที วันละ 4 ครั้ง";mgmt.push(ct)}else if(grade>=2){mgmt.push("🩹 ประคบเย็น 15 นาที วันละ 4 ครั้ง 1-2 วัน")}
+  if(drugMatch&&drugMatch.compress){const ct=drugMatch.compress==="warm"?"🔴 ประคบอุ่น 15 นาที วันละ 4 ครั้ง 1-2 วัน (⚠️ ห้ามประคบเย็นในยากลุ่มนี้)":drugMatch.compress==="cold"?"🔵 ประคบเย็น 15 นาที วันละ 4 ครั้ง 1-2 วัน":"🟡 ประคบร้อนหรือเย็นตามอาการ 15 นาที วันละ 4 ครั้ง";mgmt.push(ct)}else if(grade>=1){mgmt.push("🔵 ประคบเย็นเบื้องต้น 15 นาที วันละ 4 ครั้ง 1-2 วัน")}
   if(grade>=2)mgmt.push("⬆️ ยกแขน/บริเวณให้สูงกว่าหัวใจ 48 ชม.");
   if(grade>=3){mgmt.push("📝 รายงานอุบัติการณ์ + รายงานหัวหน้าหน่วย");mgmt.push("📋 บันทึกในเวชระเบียนอย่างละเอียด")}
   if(has("blister"))mgmt.push("⚠️ ตุ่มน้ำ — ห้ามเจาะ ห้ามประคบร้อน");
