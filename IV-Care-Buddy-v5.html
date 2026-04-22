@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#00785A">
+<title>IV Care Buddy v5 — Phyathai Sriracha</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap');
+:root{--bg:#f0f4f3;--c1:#ffffff;--c2:#e8f0ed;--bd:#d0ddd6;--tx:#1a3a2a;--dm:#6b8a7a;--ac:#00785A;--ac2:#4DB89A;--ac3:#00e8b5;--rd:#d63031;--or:#e17055;--yw:#d4a017;--gn:#00785A;--r:16px;--rs:12px;--sh:0 2px 8px rgba(0,60,40,.06),0 8px 24px rgba(0,60,40,.04);--sh2:0 4px 16px rgba(0,60,40,.08),0 12px 40px rgba(0,60,40,.06);--glass:rgba(255,255,255,.75);--glassBd:rgba(255,255,255,.3)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Kanit',sans-serif;background:var(--bg);color:var(--tx);min-height:100dvh}
+input,select,textarea,button{font-family:'Kanit',sans-serif}
+.wrap{max-width:420px;margin:0 auto;min-height:100dvh;position:relative}
+
+/* ════ HEADER — Glassmorphism ══════ */
+.hdr{background:linear-gradient(135deg,#00785A 0%,#005a42 60%,#004d38 100%);padding:14px 16px;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,120,90,.25);overflow:hidden}
+.hdr::before{content:'';position:absolute;top:-50%;right:-30%;width:200px;height:200px;background:radial-gradient(circle,rgba(77,184,154,.2) 0%,transparent 70%);pointer-events:none}
+.hdr::after{content:'';position:absolute;bottom:-40%;left:-20%;width:160px;height:160px;background:radial-gradient(circle,rgba(0,232,181,.1) 0%,transparent 70%);pointer-events:none}
+.hdr-r{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.hdr h1{font-size:16px;font-weight:700;color:#fff;letter-spacing:.3px}
+.hdr small{font-size:8px;color:rgba(255,255,255,.55);display:block;margin-top:1px}
+.hdr-logo{height:42px;border-radius:10px;background:rgba(255,255,255,.95);padding:4px 8px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:8px;font-weight:700;padding:2px 8px;border-radius:12px;backdrop-filter:blur(4px)}
+.cloud-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(0,232,181,.15);border:1px solid rgba(0,232,181,.3);color:#00e8b5;font-size:8px;font-weight:700;padding:2px 8px;border-radius:12px}
+.cloud-badge.off{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.5)}
+.cloud-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.cloud-dot.pulse{animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+
+/* ══════ TABS ══════ */
+.tabs{display:flex;background:var(--glass);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd);position:sticky;top:56px;z-index:99}
+.tab{flex:1;padding:11px 4px;text-align:center;font-size:11px;font-weight:600;color:var(--dm);cursor:pointer;border-bottom:2.5px solid transparent;transition:all .2s ease}
+.tab.on{color:var(--ac);border-color:var(--ac);background:rgba(0,120,90,.03)}
+.tab:active{background:rgba(0,120,90,.05)}
+
+/* ══════ PROGRESS BAR ══════ */
+.prog{display:flex;gap:4px;padding:12px 16px 6px}
+.pdot{flex:1;height:4px;border-radius:3px;background:#d0ddd6;transition:all .4s cubic-bezier(.4,0,.2,1);overflow:hidden}
+.pdot.done{background:linear-gradient(90deg,var(--ac),var(--ac2))}
+.pdot.now{background:linear-gradient(90deg,var(--ac),var(--ac3));box-shadow:0 0 8px rgba(0,232,181,.4);animation:progGlow 2s infinite}
+@keyframes progGlow{0%,100%{box-shadow:0 0 8px rgba(0,232,181,.3)}50%{box-shadow:0 0 14px rgba(0,232,181,.5)}}
+
+/* ══════ SCREENS ══════ */
+.scr{display:none;padding:10px 16px 110px}
+.scr.on{display:block;animation:slideUp .3s cubic-bezier(.4,0,.2,1)}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ══════ CARDS — Glass ══════ */
+.cd{background:var(--c1);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;margin-bottom:10px;box-shadow:var(--sh);transition:box-shadow .2s}
+.cd:active{box-shadow:var(--sh2)}
+.cd-t{font-size:10px;font-weight:700;color:var(--ac);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+
+/* ══════ FORM ══════ */
+.fg{margin-bottom:12px}
+.fl{font-size:11px;font-weight:600;color:var(--dm);margin-bottom:5px;display:block}
+.fi,.fs{width:100%;background:#fff;border:1.5px solid #c0d4ca;border-radius:var(--rs);padding:10px 12px;color:var(--tx);font-size:13px;-webkit-appearance:none;transition:border .2s,box-shadow .2s}
+.fi:focus,.fs:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px rgba(0,120,90,.08)}
+.r2{display:flex;gap:8px}.r2>*{flex:1}
+
+/* ══════ PHOTO ══════ */
+.ph-wrap{position:relative;border-radius:var(--r);overflow:hidden;background:#000;touch-action:none;box-shadow:var(--sh2)}
+.ph-wrap img{width:100%;display:block}
+.ph-wrap canvas{position:absolute;top:0;left:0;width:100%;height:100%;touch-action:none}
+.ph-empty{border:2px dashed var(--bd);border-radius:var(--r);padding:30px 16px;text-align:center;cursor:pointer;transition:all .2s}
+.ph-empty:active{border-color:var(--ac);background:rgba(0,232,181,.04);transform:scale(.98)}
+
+/* ══════ DRAWING BAR ══════ */
+.dbar{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.dbtn{padding:6px 10px;border-radius:14px;border:1.5px solid var(--bd);background:var(--c1);color:var(--tx);font-size:10px;font-weight:600;cursor:pointer;font-family:'Kanit';transition:all .15s}
+.dbtn:active{transform:scale(.95)}
+.dbtn.ac{border-color:var(--ac);background:rgba(0,120,90,.08);color:var(--ac)}
+
+/* ══════ SYMPTOMS ══════ */
+.sym{display:flex;align-items:center;gap:7px;padding:8px 10px;background:var(--bg);border:1.5px solid var(--bd);border-radius:10px;cursor:pointer;user-select:none;transition:all .15s}
+.sym:active{transform:scale(.97)}
+.sym.on{border-color:var(--ac);background:rgba(0,120,90,.06);box-shadow:0 0 0 2px rgba(0,120,90,.08)}
+.sym-c{width:18px;height:18px;border:2px solid var(--bd);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;color:transparent;transition:all .15s}
+.sym.on .sym-c{background:var(--ac);border-color:var(--ac);color:#fff}
+.sym-t{font-size:11px;font-weight:500;line-height:1.3}
+.sym-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+
+/* ══════ PAIN FACES ══════ */
+.faces{display:flex;gap:2px}
+.face{flex:1;text-align:center;padding:5px 0;border-radius:8px;border:2px solid transparent;cursor:pointer;transition:all .15s}
+.face:active{transform:scale(.9)}
+.face.on{border-color:var(--ac);background:rgba(0,120,90,.06);box-shadow:0 2px 8px rgba(0,120,90,.1)}
+.face-e{font-size:18px;display:block}
+.face-n{font-size:8px;font-weight:700;color:var(--dm);font-family:monospace}
+.face.on .face-n{color:var(--ac)}
+
+/* ══════ ALERTS ══════ */
+.al{border-radius:var(--rs);padding:10px 12px;margin-bottom:8px;display:flex;gap:8px;align-items:flex-start;font-size:11px;font-weight:600;line-height:1.5}
+.al.r{background:rgba(214,48,49,.06);border:1px solid rgba(214,48,49,.2);color:var(--rd)}
+.al.y{background:rgba(212,160,23,.06);border:1px solid rgba(212,160,23,.2);color:var(--yw)}
+.al.g{background:rgba(0,120,90,.06);border:1px solid rgba(0,120,90,.2);color:var(--gn)}
+
+/* ══════ TIMER ══════ */
+.timer{text-align:center;padding:12px;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);margin-top:6px}
+.timer-c{width:64px;height:64px;border-radius:50%;border:3px solid var(--bd);display:flex;align-items:center;justify-content:center;margin:0 auto 6px;font-family:monospace;font-size:22px;font-weight:700;cursor:pointer;transition:.3s}
+.timer-c.run{border-color:var(--yw);color:var(--yw);animation:tp 1s infinite}
+.timer-c.ok{border-color:var(--gn);color:var(--gn)}
+.timer-c.bad{border-color:var(--rd);color:var(--rd)}
+@keyframes tp{0%,100%{box-shadow:0 0 0 0 rgba(254,202,87,.3)}50%{box-shadow:0 0 0 12px transparent}}
+
+/* ══════ GRADE BOX ══════ */
+.gbox{text-align:center;padding:24px 16px;border-radius:var(--r);margin-bottom:12px;box-shadow:var(--sh)}
+.gnum{font-size:64px;font-weight:800;font-family:monospace;line-height:1}
+.glbl{font-size:16px;font-weight:700;margin-top:4px}
+.gscl{font-size:10px;color:var(--dm);margin-top:4px}
+.gact{font-size:11px;font-weight:600;margin-top:10px;padding:8px 14px;border-radius:var(--rs);background:rgba(0,0,0,.05);display:inline-block;line-height:1.4;max-width:90%}
+
+/* ══════ DATA ROWS ══════ */
+.dr{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(0,120,90,.08);font-size:12px}
+.dr:last-child{border:none}
+.dr-l{color:var(--dm);font-weight:500}
+.dr-v{font-weight:600;text-align:right;max-width:58%;word-break:break-word}
+
+/* ══════ TIMESTAMP ══════ */
+.ts{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--bd);border-radius:var(--rs);padding:8px 12px;margin-bottom:10px}
+.ts-l{font-size:9px;color:var(--dm)}
+.ts-v{font-size:12px;font-weight:600;color:var(--ac);font-family:monospace}
+
+/* ══════ BUTTONS ══════ */
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:13px;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;font-family:'Kanit';transition:all .15s}
+.btn:active{transform:scale(.97)}
+.btn-p{background:linear-gradient(135deg,#00785A,#4DB89A);color:#fff;box-shadow:0 4px 14px rgba(0,120,90,.25)}
+.btn-p:disabled{opacity:.3;cursor:not-allowed;box-shadow:none}
+.btn-o{background:transparent;border:1.5px solid var(--bd);color:var(--tx)}
+.btn-d{background:linear-gradient(135deg,#d63031,#c0392b);color:#fff;box-shadow:0 4px 14px rgba(214,48,49,.2)}
+.btn-cloud{background:linear-gradient(135deg,#2d9cdb,#56ccf2);color:#fff;box-shadow:0 4px 14px rgba(45,156,219,.25)}
+
+/* ══════ BOTTOM BAR ══════ */
+.bot{position:fixed;bottom:0;left:0;right:0;background:var(--glass);backdrop-filter:blur(16px);border-top:1px solid var(--glassBd);padding:10px 16px;padding-bottom:max(10px,env(safe-area-inset-bottom));display:flex;gap:8px;z-index:100;max-width:420px;margin:0 auto}
+
+/* ══════ RECORDS ══════ */
+.rec{background:#fff;border:1px solid var(--bd);border-radius:var(--r);padding:12px;margin-bottom:8px;cursor:pointer;box-shadow:var(--sh);transition:all .15s}
+.rec:active{background:var(--c2);transform:scale(.99)}
+
+/* ══════ HINTS ══════ */
+.hint{background:rgba(0,120,90,.04);border:1px solid rgba(0,120,90,.12);border-radius:var(--rs);padding:9px 12px;display:flex;gap:8px;align-items:flex-start;margin-bottom:10px}
+.hint-t{font-size:10px;color:var(--ac);line-height:1.5;font-weight:500}
+.hidden{display:none!important}
+
+/* ══════ DRUG DROPDOWN ══════ */
+.dd-item{padding:10px 12px;border-bottom:1px solid var(--bd);cursor:pointer;font-size:12px;transition:.1s}
+.dd-item:active{background:rgba(0,120,90,.06)}
+.dd-item:last-child{border:none}
+.dd-name{font-weight:700;color:var(--tx)}
+.dd-cat{font-size:10px;color:var(--dm);margin-top:2px}
+.dd-level{display:inline-block;padding:1px 7px;border-radius:8px;font-size:9px;font-weight:800;margin-left:4px}
+.dd-red{background:rgba(214,48,49,.12);color:var(--rd)}
+.dd-yel{background:rgba(212,160,23,.12);color:var(--yw)}
+.drug-alert{border:2px solid;border-radius:var(--rs);padding:10px 12px;margin-top:8px}
+
+/* ══════ TOAST NOTIFICATIONS ══════ */
+.toast-wrap{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:9999;max-width:380px;width:90%;pointer-events:none}
+.toast{padding:12px 16px;border-radius:var(--rs);margin-bottom:8px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px;pointer-events:auto;animation:toastIn .3s ease;box-shadow:0 8px 24px rgba(0,0,0,.15);backdrop-filter:blur(12px)}
+.toast.out{animation:toastOut .3s ease forwards}
+.toast.success{background:rgba(0,120,90,.95);color:#fff}
+.toast.error{background:rgba(214,48,49,.95);color:#fff}
+.toast.info{background:rgba(45,156,219,.95);color:#fff}
+.toast.warning{background:rgba(212,160,23,.95);color:#fff}
+@keyframes toastIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateY(-12px)}}
+
+/* ══════ CLOUD STATUS ══════ */
+.cloud-panel{padding:16px}
+.cloud-card{background:#fff;border:1.5px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--sh)}
+.cloud-card h3{font-size:13px;font-weight:700;color:var(--ac);margin-bottom:8px}
+.cloud-status{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:var(--rs);font-size:12px;font-weight:600}
+.cloud-status.ok{background:rgba(0,120,90,.06);color:var(--gn)}
+.cloud-status.off{background:rgba(212,160,23,.06);color:var(--yw)}
+.cloud-status.err{background:rgba(214,48,49,.06);color:var(--rd)}
+
+/* ══════ LOADING SPINNER ══════ */
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner-dark{border-color:rgba(0,120,90,.2);border-top-color:var(--ac)}
+
+/* ══════ SCROLLBAR ══════ */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:var(--ac2);border-radius:4px}
+
+/* ══════ FOLLOW-UP / REASSESSMENT ══════ */
+.fu-banner{background:linear-gradient(135deg,rgba(45,156,219,.08),rgba(0,120,90,.06));border:1.5px solid rgba(45,156,219,.3);border-radius:var(--r);padding:12px 14px;margin-bottom:10px;animation:slideUp .3s ease}
+.fu-banner-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.fu-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#2d9cdb,#56ccf2);color:#fff;font-size:10px;font-weight:800;padding:3px 10px;border-radius:12px}
+.fu-count{font-size:11px;font-weight:600;color:#2d9cdb}
+.fu-timeline{display:flex;gap:8px;overflow-x:auto;padding:6px 0;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.fu-timeline::-webkit-scrollbar{display:none}
+.fu-card{min-width:120px;max-width:140px;background:#fff;border:1.5px solid var(--bd);border-radius:var(--rs);padding:8px;flex-shrink:0;cursor:pointer;transition:all .15s}
+.fu-card:active{transform:scale(.97);box-shadow:var(--sh2)}
+.fu-card.current{border-color:var(--ac);background:rgba(0,120,90,.03)}
+.fu-card-img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;background:var(--bg);margin-bottom:6px}
+.fu-card-grade{display:inline-block;font-size:9px;font-weight:800;padding:1px 6px;border-radius:8px;font-family:monospace}
+.fu-card-time{font-size:9px;color:var(--dm);margin-top:3px}
+.fu-card-num{font-size:8px;font-weight:700;color:var(--dm);text-transform:uppercase;letter-spacing:.5px}
+.fu-next{display:flex;align-items:center;gap:8px;background:rgba(212,160,23,.06);border:1px solid rgba(212,160,23,.2);border-radius:var(--rs);padding:8px 12px;margin-top:8px;font-size:10px;color:var(--yw);font-weight:600}
+.fu-next-icon{font-size:16px}
+.fu-compare{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.fu-compare-card{background:#fff;border:1px solid var(--bd);border-radius:var(--rs);padding:6px;text-align:center}
+.fu-compare-card img{width:100%;border-radius:8px;aspect-ratio:4/3;object-fit:cover}
+.fu-compare-label{font-size:9px;font-weight:700;margin-top:4px}
+.fu-trend{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px}
+.fu-trend.better{background:rgba(0,120,90,.08);color:var(--gn)}
+.fu-trend.worse{background:rgba(214,48,49,.08);color:var(--rd)}
+.fu-trend.same{background:rgba(212,160,23,.08);color:var(--yw)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ══════ TOAST CONTAINER ══════ -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- ══════ HEADER ══════ -->
+<div class="hdr">
+<div class="hdr-r">
+<div style="display:flex;align-items:center;gap:10px">
+<img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyMy4xLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAyMTAgNTUiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDIxMCA1NTsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4NCgkuc3Qwe2ZpbGw6IzAwNkE1Qjt9DQoJLnN0MXtmaWxsOiM2Q0NBOTg7fQ0KCS5zdDJ7ZmlsbDojN0I4NjhDO30NCjwvc3R5bGU+DQo8Zz4NCgk8Zz4NCgkJPHBhdGggY2xhc3M9InN0MCIgZD0iTTE1MS41LDEwLjlMMTUxLjUsMTAuOWgtNi45djQuMmg2LjhsMCwwYzIuOSwwLDQuMywwLjYsNC4zLDIuNnYxMi4xaDUuNFYxNy45DQoJCQlDMTYxLjEsMTMuNSwxNTcuNiwxMSwxNTEuNSwxMC45eiIvPg0KCQk8cG9seWdvbiBjbGFzcz0ic3QwIiBwb2ludHM9IjkyLjksMjMuOSA5Mi44LDIzLjkgODkuMywxMC45IDgyLjksMTAuOSA3OS40LDIzLjkgNzkuMywyMy45IDc1LjEsMTAuOSA2OS4yLDEwLjkgNzYsMjkuOCANCgkJCTgyLjQsMjkuOCA4Ni4xLDE3IDg2LjEsMTcgODkuOSwyOS44IDk2LjIsMjkuOCAxMDMuMSwxMC45IDk3LjEsMTAuOSAJCSIvPg0KCQk8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMTc5LjUsNi42VjIuNWgtMTguNHY0LjFoNy45Yy0xLjcsMS42LTIuNywzLjYtMi43LDUuOHYxNy40aDUuNFYxMi41QzE3MS42LDguNywxNzUuOCw2LjYsMTc5LjUsNi42DQoJCQlMMTc5LjUsNi42eiIvPg0KCQk8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMTM1LjYsMjNjMCwyLTEuMiwzLjItNC41LDMuM2MtMC4xLDAtMC4zLDAtMC40LDBjLTAuMSwwLTAuMiwwLTAuMywwYy0zLjMtMC4xLTQuNS0xLjQtNC41LTMuMnYtNS44DQoJCQljMCwwLDAtMC4xLDAtMC4xYzAtMC40LDAtMC45LTAuMi0xLjRjLTAuNS0yLjEtMi4yLTMuOC00LjktNC44Yy0xLjUtMC41LTMuMi0wLjgtNS4yLTAuOGgwYy01LjYsMC05LjMsMi4zLTEwLjEsNS42DQoJCQljLTAuMSwwLjUtMC4yLDEtMC4yLDEuNXYxMi41aDB2MGg4LjN2LTQuMWgtMi44di03LjhjMC0yLDEuMS0zLjMsNC41LTMuNGMwLjEsMCwwLjIsMCwwLjQsMGMwLjEsMCwwLjIsMCwwLjQsMA0KCQkJYzMuMSwwLjEsNC4zLDEuMiw0LjQsM3Y2LjFjMCwwLjEsMCwwLjIsMCwwLjNjMCwwLjQsMC4xLDAuOCwwLjIsMS4yYzAuNSwyLjEsMi4yLDMuOSw0LjksNC44YzEuNSwwLjUsMy4yLDAuOCw1LjIsMC44aDAuMQ0KCQkJYzEuOCwwLDMuNS0wLjMsNC45LTAuN3YwLjVjMCwyLTEuMywyLjYtNC4zLDIuNmwwLDBoLTguMXY0LjNoOC4zdjBjNi4yLDAsOS42LTIuNiw5LjYtN1YxMC45aC01LjRWMjN6Ii8+DQoJCTxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xOTMuMywxMC4xYy0wLjEsMC0wLjQsMC0wLjcsMHYwYy0yLjcsMC01LjUsMC44LTcuOCwyLjF2LTEuM2gtNS41djE5aDUuNXYtMTBjMC0xLDAuNC0xLjksMC45LTIuNg0KCQkJYzEuNC0xLjksNC4zLTIuOSw2LjgtMi45bDAsMGMzLjEsMCw1LjEsMC43LDUuMSwyLjZ2MTIuOGg1LjRWMTcuMUMyMDMuMSwxMi43LDE5OS42LDEwLjEsMTkzLjMsMTAuMXoiLz4NCgk8L2c+DQoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTcyLjcsNTAuNWg2LjdjMy4zLDAsNS4xLTEuNiw1LjEtNC4yYzAtMi41LTItNC4yLTUtNC4ySDY5LjJ2MTIuNGgzLjZWNTAuNXogTTcyLjcsNDQuOWg2LjYNCgkJYzEuMSwwLDEuOCwwLjUsMS44LDEuM2MwLDAuOS0wLjcsMS41LTEuOCwxLjVoLTYuNlY0NC45eiBNMTQ2LjksNTQuNWgzLjZ2LTkuNmg1Ljl2LTIuOEgxNDF2Mi44aDUuOVY1NC41eiBNMTYzLjUsNDkuN2g4Ljl2NC44DQoJCWgzLjZWNDIuMWgtMy42djQuOGgtOC45di00LjhoLTMuNnYxMi40aDMuNlY0OS43eiBNMTI3LjksNTQuNWwxLjQtMi42aDcuN2wxLjQsMi42aDMuN2wtNi45LTEyLjRoLTRsLTYuOSwxMi40SDEyNy45eiBNMTMzLjEsNDUNCgkJbDIuMyw0LjFoLTQuNUwxMzMuMSw0NXogTTkxLjksNDkuN2g4Ljl2NC44aDMuNlY0Mi4xaC0zLjZ2NC44aC04Ljl2LTQuOGgtMy42djEyLjRoMy42VjQ5Ljd6IE0xMTQuNSw1NC41aDMuNnYtNC44bDcuOC03LjdoLTQuNQ0KCQlsLTUsNWwtNS4xLTVoLTQuNWw3LjgsNy43VjU0LjV6IE0xOTkuNSw0Mi4xdjEyLjRoMy42VjQyLjFIMTk5LjV6IE0xODUuNyw0Mi4xbC02LjksMTIuNGgzLjdsMS40LTIuNmg3LjdsMS40LDIuNmgzLjdsLTYuOS0xMi40DQoJCUgxODUuN3ogTTE4NS41LDQ5LjFsMi4yLTQuMWwyLjIsNC4xSDE4NS41eiIvPg0KCTxnPg0KCQk8cGF0aCBjbGFzcz0ic3QxIiBkPSJNMzEuMSwzOC4xQzMxLjEsMzguMSwzMS4xLDM4LjEsMzEuMSwzOC4xYzAuMSwwLDAuMiwwLDAuMiwwYzAsMCwwLDAsMCwwYzAuMSwwLDAuMiwwLDAuNCwwDQoJCQljMS4zLTAuMiwyLjQtMS4xLDIuOC0yLjNjMC0wLjEsMC4xLTAuMiwwLjEtMC4zYzAtMC4xLDAtMC4xLDAtMC4yYzAtMC4yLDAuMS0wLjQsMC4xLTAuNmgwbDAsMGMwLTItMS42LTMuNi0zLjYtMy42DQoJCQljLTIsMC0zLjYsMS42LTMuNiwzLjZjMCwwLjEsMCwwLjEsMCwwLjJjMCwwLjEsMCwwLjMsMCwwLjRjMCwwLjItMC4xLDAuNS0wLjEsMC43Yy0wLjUsMS45LTIuMywzLjQtNC41LDMuNA0KCQkJYy0yLjIsMC00LjEtMS41LTQuNS0zLjZjMC0wLjEtMC4xLTAuNC0wLjEtMC43YzAsMCwwLTAuNCwwLTAuOWMwLTAuMiwwLTAuNCwwLTAuNWMwLTAuMiwwLTAuNSwwLTAuNmMwLTIuOS0yLjQtNS4yLTUuMi01LjINCgkJCWMtMi45LDAtNS4yLDIuMy01LjIsNS4yYzAsMi45LDIuMyw1LjIsNS4yLDUuMmgyYzIuMywwLDQuNiwyLjMsNC42LDQuNmMwLDIuNS0xLjksNC41LTQuNCw0LjZjLTAuMSwwLTAuMiwwLTAuMywwDQoJCQljMCwwLTAuMSwwLTAuMSwwYy0yLDAtMy42LDEuNi0zLjYsMy42YzAsMiwxLjYsMy42LDMuNiwzLjZjMC40LDAsMC44LTAuMSwxLjEtMC4yYzAuMSwwLDAuMiwwLDAuMy0wLjFjMC4xLDAsMC4yLTAuMSwwLjMtMC4xDQoJCQljMC4xLTAuMSwwLjItMC4xLDAuMy0wLjJjMC4xLTAuMSwwLjEtMC4xLDAuMi0wLjJjMC4xLTAuMSwwLjItMC4yLDAuMy0wLjNjMC4xLTAuMSwwLjEtMC4xLDAuMi0wLjJjMC4xLTAuMSwwLjItMC4yLDAuMy0wLjMNCgkJCWMwLTAuMSwwLjEtMC4xLDAuMS0wLjJjMC4xLTAuMSwwLjEtMC4zLDAuMi0wLjRjMC0wLjEsMC4xLTAuMSwwLjEtMC4yYzAuMS0wLjEsMC4xLTAuMywwLjEtMC40YzAtMC4xLDAtMC4yLDAtMC4yDQoJCQljMC0wLjEsMC0wLjIsMC4xLTAuM2MwLTAuMiwwLTAuNCwwLTAuNGMwLTAuMSwwLTAuMiwwLTAuMmMwLjItMi40LDIuMS00LjIsNC41LTQuMmMyLjQsMCw0LjQsMS45LDQuNSw0LjRjMCwwLjEsMCwwLjEsMCwwLjJ2MA0KCQkJYzAsMC42LDAuMiwxLjIsMC40LDEuN2MwLjEsMC4xLDAuMSwwLjIsMC4yLDAuM2MwLjEsMC4yLDAuMiwwLjMsMC40LDAuNWMwLDAsMCwwLDAuMSwwLjFjMC42LDAuNiwxLjUsMSwyLjUsMWMwLjEsMCwwLjEsMCwwLjIsMA0KCQkJYzAuMSwwLDAuMywwLDAuNCwwYzAuMSwwLDAuMiwwLDAuMy0wLjFjMC4xLDAsMC4yLTAuMSwwLjMtMC4xYzAuMiwwLDAuMy0wLjEsMC40LTAuMmMwLDAsMC4xLDAsMC4xLTAuMWMwLDAsMCwwLDAuMSwwDQoJCQljMC4xLTAuMSwwLjItMC4xLDAuMy0wLjJjMC4xLTAuMSwwLjMtMC4yLDAuNC0wLjNjMC4xLTAuMSwwLjEtMC4xLDAuMi0wLjJjMC4xLTAuMSwwLjEtMC4yLDAuMi0wLjNjMC4xLTAuMSwwLjEtMC4xLDAuMS0wLjINCgkJCWMwLjEtMC4xLDAuMi0wLjMsMC4yLTAuNWMwLTAuMSwwLjEtMC4xLDAuMS0wLjJjMC0wLjEsMC4xLTAuMywwLjEtMC40YzAtMC4xLDAtMC4yLDAtMC4zYzAtMC4xLDAtMC4zLDAtMC40YzAtMC4xLDAtMC4xLDAtMC4yDQoJCQljMC0wLjEsMC0wLjIsMC0wLjNjMC0wLjEsMC0wLjIsMC0wLjNjMC0wLjEtMC4xLTAuMy0wLjEtMC40YzAtMC4xLDAtMC4xLDAtMC4yYy0wLjQtMS4zLTEuNS0yLjItMi45LTIuNGMwLDAtMC4xLDAtMC4xLDANCgkJCWMtMC4xLDAtMC4yLDAtMC4zLDBjLTAuMSwwLTAuMSwwLTAuMSwwYy0yLjUtMC4xLTQuNS0yLjEtNC41LTQuNkMyNi41LDQwLjIsMjguNSwzOC4yLDMxLjEsMzguMXoiLz4NCgkJPHBhdGggY2xhc3M9InN0MCIgZD0iTTQyLjUsMzIuOWMwLTAuMSwwLTAuMS0wLjEtMC4yYy0wLjEtMC4xLTAuMS0wLjMtMC4yLTAuNGMwLDAtMC4xLTAuMS0wLjEtMC4xYy0wLjEtMC4xLTAuMi0wLjMtMC4zLTAuNA0KCQkJYy0wLjEtMC4xLTAuMi0wLjItMC4yLTAuMmMwLDAsMCwwLDAsMGMtMC41LTAuNS0xLjItMC44LTItMC45YzAsMC0wLjEsMC0wLjEsMGMtMC4yLDAtMC41LDAtMC42LTAuMWMtMi40LTAuMS00LjMtMi4xLTQuMy00LjYNCgkJCWMwLTIuMywxLjctNC4zLDQtNC42YzAuMywwLDAuNy0wLjEsMC45LTAuMWMwLjUsMCwwLjgtMC4xLDEuMi0wLjNjMCwwLDAuMi0wLjEsMC4yLTAuMXYwYzAuMy0wLjIsMC42LTAuNCwwLjktMC42DQoJCQljMC4xLTAuMSwwLjEtMC4xLDAuMi0wLjJjMC4xLTAuMSwwLjEtMC4xLDAuMi0wLjJjMC41LTAuNiwwLjgtMS40LDAuOC0yLjJjMC0xLjktMS42LTMuNS0zLjUtMy41Yy0wLjEsMC0wLjIsMC0wLjMsMA0KCQkJYy0wLjEsMC0wLjIsMC0wLjQsMGMwLDAtMC4xLDAtMC4xLDBjLTEuMiwwLjMtMi4yLDEuMS0yLjYsMi4zYzAsMC0wLjEsMC4yLTAuMiwwLjZjMCwwLjEsMCwwLjQtMC4xLDAuNmMwLDAsMCwwLjEsMCwwLjINCgkJCWMwLDIuNS0yLDQuNS00LjUsNC41Yy0yLDAtMy44LTEuNC00LjMtMy4yYy0wLjEtMC4zLTAuMS0wLjYtMC4yLTAuOWMwLDAsMC0wLjMsMC0wLjRjMC0wLjQsMC4xLTEuMywwLjEtMS40YzAtMC4xLDAtMC40LDAtMC40DQoJCQljMC0yLjktMi40LTUuMy01LjMtNS4zYy0yLjksMC01LjMsMi40LTUuMyw1LjNjMCwyLjksMi40LDUuMyw1LjMsNS4zYzAsMCwxLjcsMCwxLjcsMGMwLDAsMC4yLDAsMC41LDBjMS4yLDAuMSwyLjMsMC44LDMsMS44DQoJCQljMC41LDAuNiwwLjgsMS4yLDAuOSwyLjFjMCwwLjIsMC4xLDAuNCwwLjEsMC42YzAsMi40LTEuOSw0LjQtNC4zLDQuNmMtMC4xLDAtMC40LDAtMC42LDAuMWMtMC4yLDAtMC4zLDAtMC40LDAuMQ0KCQkJYy0xLDAuMi0xLjcsMC44LTIuMywxLjVjMCwwLDAsMC4xLTAuMSwwLjFjLTAuMSwwLjEtMC4xLDAuMi0wLjEsMC4zYy0wLjMsMC41LTAuNCwxLjEtMC40LDEuN2MwLDEuOSwxLjYsMy41LDMuNSwzLjUNCgkJCWMxLDAsMS45LTAuNCwyLjUtMS4xYzAuMi0wLjIsMC40LTAuNCwwLjUtMC42YzAuMi0wLjMsMC4zLTAuNywwLjQtMWMwLTAuMSwwLTAuMSwwLTAuMmMwLTAuMiwwLjEtMC4zLDAuMS0wLjV2MGMwLDAsMC0wLjEsMC0wLjENCgkJCWMwLDAsMCwwLDAtMC4xYzAsMCwwLTAuMSwwLTAuMWMwLTAuNSwwLjEtMSwwLjItMS41YzAtMC4xLDAuMS0wLjQsMC4yLTAuNGMwLTAuMSwwLTAuMSwwLjEtMC4yYzAuNy0xLjUsMi4zLTIuNSw0LjEtMi41DQoJCQljMC4yLDAsMC40LDAsMC42LDBjMC4xLDAsMC4xLDAsMC4yLDBjMS4yLDAuMiwyLjMsMS4xLDIuNCwxLjJjMCwwLDAuMSwwLDAuMSwwLjFjMC44LDAuOCwxLjMsMS44LDEuMywzLjFjMCwwLDAsMC4xLDAsMC4yDQoJCQljMCwwLDAsMCwwLDBjMCwwLjQsMC4xLDAuOSwwLjIsMS4yYzAsMCwwLDAsMCwwbDAsMGMwLDAuMSwwLDAuMSwwLjEsMC4yYzAuMSwwLjEsMC4xLDAuMywwLjIsMC40YzAsMCwwLDAuMSwwLjEsMC4xDQoJCQljMCwwLDAuMSwwLjEsMC4xLDAuMWMwLjEsMC4xLDAuMSwwLjEsMC4xLDAuMWMwLjEsMC4xLDAuMSwwLjEsMC4yLDAuMmMwLjEsMC4xLDAuMiwwLjIsMC4yLDAuMmMwLjEsMC4xLDAuMiwwLjEsMC4zLDAuMg0KCQkJYzAuMSwwLjEsMC4yLDAuMSwwLjMsMC4yYzAuMSwwLjEsMC4yLDAuMSwwLjMsMC4yYzAuMSwwLDAuMiwwLjEsMC4zLDAuMWMwLjEsMC4xLDAuMywwLjEsMC40LDAuMWMwLjEsMCwwLjIsMCwwLjMsMC4xDQoJCQljMC4xLDAsMC4yLDAsMC4zLDBjMC4xLDAsMC4yLDAsMC4yLDBjMS45LDAsMy41LTEuNiwzLjUtMy41YzAtMC4zLTAuMS0wLjYtMC4xLTAuOUM0Mi42LDMzLjIsNDIuNiwzMyw0Mi41LDMyLjl6Ii8+DQoJCTxwYXRoIGNsYXNzPSJzdDIiIGQ9Ik01OS40LDQyLjZjMC0wLjQtMC4xLTAuNy0wLjItMWMwLDAsMCwwLDAtMC4xYzAtMC4xLTAuMS0wLjItMC4xLTAuMmMwLDAsMC0wLjEsMC0wLjFjMC0wLjEtMC4xLTAuMS0wLjEtMC4yDQoJCQljMC0wLjEsMC0wLjEtMC4xLTAuMWMwLDAsMCwwLDAtMC4xYy0wLjYtMS0xLjgtMS43LTMuMS0xLjdjMCwwLDAsMC0wLjEsMGMtMC4xLDAtMC4xLDAtMC4xLDBjLTIuNCwwLTQuNS0yLjUtNC41LTQuNw0KCQkJYzAtMi42LDIuMS00LjcsNC43LTQuN2MwLDAsMC4yLDAsMC4yLDBjMC42LDAsMS4yLTAuMiwxLjctMC42YzAsMCwwLDAsMC4xLTAuMWMwLDAsMC4xLDAsMC4xLTAuMWMwLjMtMC4yLDAuNS0wLjQsMC43LTAuNg0KCQkJYzAsMCwwLDAsMC0wLjFjMC4xLTAuMSwwLjEtMC4xLDAuMi0wLjJjMCwwLDAsMCwwLTAuMWMwLjItMC4yLDAuMy0wLjUsMC40LTAuOGMwLTAuMSwwLTAuMSwwLjEtMC4yYzAtMC4xLDAtMC4xLDAtMC4yDQoJCQljMC0wLjEsMC0wLjIsMC4xLTAuM2MwLDAsMC0wLjEsMC0wLjFjMC0wLjEsMC0wLjMsMC0wLjRjMC0yLTEuNi0zLjYtMy42LTMuNmMtMiwwLTMuNiwxLjYtMy42LDMuNmMwLDAuMSwwLDAuMiwwLDAuM2MwLDAsMCwwLDAsMA0KCQkJYy0wLjEsMi40LTIsNC4zLTQuNCw0LjNjLTIuNSwwLTQuNS0yLTQuNS00LjVjMCwwLDAtMC4zLDAtMC4zYzAtMC4zLTAuMS0wLjYtMC4yLTAuOWMwLDAsMC0wLjEsMC0wLjFjMC0wLjEsMC0wLjEtMC4xLTAuMQ0KCQkJYy0wLjUtMS40LTEuOC0yLjMtMy4zLTIuM2MtMiwwLTMuNiwxLjYtMy42LDMuNmMwLDEuNCwwLjgsMi42LDEuOSwzLjJjMCwwLDAsMCwwLDBjMC41LDAuMiwwLjksMC40LDEuNSwwLjRjMCwwLDAuMSwwLDAuMiwwDQoJCQljMi42LDAsNC42LDIuMSw0LjYsNC43YzAsMS44LTEsMy4zLTIuNSw0LjFDNDEuNSwzOC43LDQxLDM5LDQwLjMsMzljLTAuMSwwLTAuNiwwLTAuNiwwYy0wLjIsMC0xLTAuMS0xLTAuMQ0KCQkJYy0yLjYsMC00LjcsMi4xLTQuNyw0LjZjMCwyLjYsMi4xLDQuNyw0LjcsNC43YzIuNiwwLDQuNy0yLjEsNC43LTQuN2MwLTAuMiwwLTEuMSwwLTEuMWMwLTAuMSwwLTIsMS4zLTMuM2MwLjgtMC44LDEuOC0xLjIsMy0xLjINCgkJCWgwLjJjMS4zLDAsMi4zLDAuNCwzLjEsMS4yYzAuMSwwLjEsMC4zLDAuNCwwLjMsMC40YzAuNiwwLjcsMSwxLjYsMSwyLjhjMCwwLjEsMCwwLjIsMCwwLjNjMCwyLDEuNiwzLjYsMy42LDMuNg0KCQkJYzEuMiwwLDIuMy0wLjYsMy0xLjZDNTkuMSw0NCw1OS40LDQzLjQsNTkuNCw0Mi42eiIvPg0KCTwvZz4NCjwvZz4NCjwvc3ZnPg0K" alt="Phyathai Sriracha" class="hdr-logo">
+<div><h1>IV Care Buddy</h1><small>Phyathai Sriracha Hospital · v5.0</small></div>
+</div>
+<div style="display:flex;gap:6px;align-items:center">
+<span class="cloud-badge off" id="cloudBadge"><span class="cloud-dot" id="cloudDot"></span> Offline</span>
+<span class="badge" id="clock">--</span>
+</div>
+</div>
+</div>
+
+<!-- ══════ LINE BROWSER WARNING ══════ -->
+<div id="lineBrowserWarn" style="display:none;background:linear-gradient(135deg,#fff3cd,#ffeeba);border-bottom:2px solid #ffc107;padding:10px 14px;font-size:12px;color:#856404;line-height:1.6">
+<div style="display:flex;align-items:flex-start;gap:8px">
+<span style="font-size:20px">⚠️</span>
+<div>
+<b>กำลังเปิดผ่าน LINE Browser</b><br>
+กล้องและรูปภาพอาจใช้ไม่ได้ กรุณาเปิดใน Chrome/Safari แทน
+<div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
+<button onclick="openInExtBrowser()" style="background:#00785A;color:#fff;border:none;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">🌐 เปิดใน Chrome</button>
+<button onclick="this.parentElement.parentElement.parentElement.parentElement.style.display='none'" style="background:transparent;border:1px solid #856404;color:#856404;padding:6px 12px;border-radius:8px;font-size:11px;cursor:pointer">ปิด</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ══════ TABS ══════ -->
+<div class="tabs">
+<div class="tab on" id="tabN" onclick="goTab('n')">📋 ประเมิน</div>
+<div class="tab" id="tabL" onclick="goTab('l')">📁 บันทึก <span id="cnt" style="font-size:9px;opacity:.7">0</span></div>
+<div class="tab" id="tabR" onclick="goTab('r')">📖 Reference</div>
+<div class="tab" id="tabC" onclick="goTab('c')">☁️ Cloud</div>
+</div>
+
+<!-- ══════ ASSESSMENT VIEW ══════ -->
+<div id="vN">
+<div class="prog" id="prog"></div>
+
+<!-- Step 1: Patient Info -->
+<div class="scr on" data-s="1">
+<div class="ts"><div class="ts-l">🕐 เวลาปัจจุบัน</div><div class="ts-v" id="ts1">--</div></div>
+<div class="cd">
+<div class="cd-t">🏥 โรงพยาบาล</div>
+<div class="fg"><label class="fl">เลือกโรงพยาบาล</label><select class="fs" id="fHosp" onchange="onHospChange()"><option value="phyathai-sriracha">รพ.พญาไทศรีราชา</option><option value="custom">อื่นๆ — พิมพ์เอง</option></select></div>
+<div class="fg hidden" id="fHospCustomWrap"><label class="fl">ชื่อโรงพยาบาล</label><input class="fi" id="fHospCustom" placeholder="พิมพ์ชื่อ รพ. ของคุณ"></div>
+</div>
+<div class="cd">
+<div class="cd-t">👤 ข้อมูลผู้ป่วย</div>
+<div class="r2"><div class="fg"><label class="fl">HN *</label><input class="fi" id="fHN" placeholder="เลข HN" oninput="checkPatientHistory()"></div><div class="fg"><label class="fl">ชื่อ-สกุล *</label><input class="fi" id="fNm" placeholder="ชื่อผู้ป่วย"></div></div>
+<div id="fuPanel" class="hidden"></div>
+<div class="r2"><div class="fg"><label class="fl">Ward</label><select class="fs" id="fWd"><option value="">เลือก Ward</option></select></div><div class="fg"><label class="fl">เตียง</label><input class="fi" id="fBd" placeholder="เลขเตียง"></div></div>
+</div>
+<div class="cd">
+<div class="cd-t">💉 ข้อมูล IV</div>
+<div class="fg"><label class="fl">ตำแหน่ง IV</label><select class="fs" id="fSt"><option value="">เลือกตำแหน่ง</option></select></div>
+<div class="fg"><label class="fl">สารน้ำ / ยา *</label><input class="fi" id="fFl" placeholder="พิมพ์ชื่อยาหรือสารน้ำ..." oninput="onDrugInput()" autocomplete="off"><div id="drugDrop" style="display:none;max-height:220px;overflow-y:auto;border:1px solid var(--bd);border-radius:0 0 var(--rs) var(--rs);background:#fff;margin-top:-2px;box-shadow:var(--sh2)"></div><div id="drugAlertBox"></div></div>
+<div class="r2"><div class="fg"><label class="fl">Gauge</label><select class="fs" id="fGg"><option value="">เลือก</option></select></div><div class="fg"><label class="fl">วันแทง IV</label><input class="fi" id="fIn" type="date"></div></div>
+</div>
+<div class="cd">
+<div class="cd-t">👩‍⚕️ ผู้ประเมิน</div>
+<div class="r2"><div class="fg"><label class="fl">ชื่อผู้ประเมิน</label><input class="fi" id="fAs" placeholder="ชื่อ-สกุล"></div><div class="fg"><label class="fl">เลข ว.</label><input class="fi" id="fLc" placeholder="ใบประกอบวิชาชีพ"></div></div>
+<div class="fg"><label class="fl">หมายเหตุ</label><textarea class="fi" id="fNt" rows="2" placeholder="(ถ้ามี)" style="resize:vertical"></textarea></div>
+</div>
+</div>
+
+<!-- Step 2: Photo -->
+<div class="scr" data-s="2">
+<div class="cd">
+<div class="cd-t">📷 ถ่ายรูปบริเวณ IV Site</div>
+<input type="file" accept="image/*" capture="environment" id="camIn" style="display:none" onchange="onPhoto(this)">
+<input type="file" accept="image/*" id="galIn" style="display:none" onchange="onPhoto(this)">
+<div id="phBox"><div style="display:flex;gap:10px;justify-content:center"><div class="ph-empty" onclick="$('camIn').click()" style="flex:1;padding:24px 10px"><div style="font-size:38px">📷</div><div style="font-size:12px;font-weight:600;margin-top:6px">ถ่ายรูป</div></div><div class="ph-empty" onclick="$('galIn').click()" style="flex:1;padding:24px 10px"><div style="font-size:38px">🖼️</div><div style="font-size:12px;font-weight:600;margin-top:6px">เลือกจากคลัง</div></div></div></div>
+</div>
+<div id="markUI" class="hidden">
+<div class="cd">
+<div class="cd-t">✏️ วงบริเวณผิดปกติ</div>
+<div id="autoDetBox"><div class="al y" style="font-size:12px"><b>👆 ลากนิ้ววาดรอบบริเวณผิดปกติ</b> เพื่อวัดขนาด Lesion</div></div>
+<div id="liveMeasure" class="hidden" style="background:linear-gradient(135deg,rgba(0,120,90,.06),rgba(45,156,219,.04));border:1.5px solid rgba(0,120,90,.2);border-radius:var(--rs);padding:10px 12px;margin-bottom:8px;text-align:center">
+<div style="font-size:9px;font-weight:700;color:var(--dm);text-transform:uppercase;letter-spacing:.5px">📐 ขนาด Lesion</div>
+<div id="liveMeasureVal" style="font-size:22px;font-weight:800;color:var(--ac);font-family:monospace;margin:2px 0">-- mm</div>
+<div id="liveMeasureDetail" style="font-size:10px;color:var(--dm)"></div>
+</div>
+<div class="dbar">
+<button class="dbtn" id="btnConfirmOval" onclick="confirmOval()">✅ ยืนยันวง</button>
+<button class="dbtn" onclick="clearOval()">🗑 ลบ</button>
+<button class="dbtn" onclick="retake()">📷 ถ่ายใหม่</button>
+</div>
+<div class="r2" style="margin-top:8px"><div class="fg"><label class="fl">📏 Scale (px/mm)</label><input class="fi" id="fScale" type="number" value="5" min="0.1" step="0.1" oninput="showOvalMeasure()"><div style="font-size:8px;color:var(--dm);margin-top:2px">ค่าเริ่มต้น ≈5 px/mm (ถ่ายห่าง~20cm)</div></div><div class="fg"><label class="fl">📐 วัดได้</label><div id="ovalMeasure" style="font-size:12px;font-weight:600;padding:10px 0;color:var(--dm)">-- ยังไม่ได้วง --</div></div></div>
+<div id="manualOvalHint" class="hidden"><div class="al y">👆 วงด้วยมือ: ลากนิ้วบนภาพ → กด "✅ ยืนยันวง"</div></div>
+</div>
+</div>
+<div id="scrollHandle" class="hidden" style="text-align:center;padding:8px"><span style="font-size:10px;color:var(--dm)">⬇ เลื่อนลงเพื่อกรอกข้อมูลเพิ่มเติม</span></div>
+<div class="cd"><div class="cd-t">📐 ขนาดบวม (ถ้าวัดได้)</div><div class="fg"><label class="fl">ขนาดกว้างสุด (cm)</label><input class="fi" id="fEd" type="number" step="0.1" placeholder="เช่น 3.5"></div></div>
+</div>
+
+<!-- Step 3: Assessment -->
+<div class="scr" data-s="3">
+<div class="cd">
+<div class="cd-t">😣 ระดับความเจ็บปวด (NRS 0-10)</div>
+<div class="faces" id="faceR"></div>
+<div id="painAl" class="hidden"></div>
+</div>
+<div class="cd">
+<div class="cd-t">🔍 อาการทางผิวหนัง</div>
+<div id="gSkin"></div>
+</div>
+<div class="cd">
+<div class="cd-t">🫀 อาการระบบหลอดเลือด</div>
+<div id="gVasc"></div>
+</div>
+<div class="cd">
+<div class="cd-t">⚠️ อาการรุนแรง</div>
+<div id="gSev"></div>
+</div>
+<div class="cd">
+<div class="cd-t">⏱ Capillary Refill Test</div>
+<div class="dbar" style="margin-bottom:8px"><button class="dbtn" id="capNorm" onclick="capSetNormal()">✅ ปกติ (&lt;2s)</button><button class="dbtn" id="capAbn" onclick="capSetAbnormal()">🚨 ช้า (&gt;2s)</button><button class="dbtn" id="capManual" onclick="capSetManualMode()">⏱ จับเวลาเอง</button></div>
+<div id="capTimerArea" style="display:none"><div class="timer"><div class="timer-c" id="capC" onclick="tapCap()"><span id="capT">0.0</span></div><div style="font-size:10px;color:var(--dm)" id="capH">แตะเพื่อเริ่ม → แตะอีกครั้งเมื่อสีกลับ</div></div></div>
+<div id="capR"></div>
+</div>
+</div>
+
+<!-- Step 4: Results -->
+<div class="scr" data-s="4">
+<div id="resBox"></div>
+<div id="cloudSaveBox" class="hidden" style="margin-top:8px">
+<button class="btn btn-cloud" id="btnCloudSave" onclick="saveToCloud()">☁️ บันทึกขึ้น Cloud</button>
+<div id="cloudSaveStatus" style="text-align:center;font-size:11px;margin-top:6px;color:var(--dm)"></div>
+</div>
+</div>
+</div>
+
+<!-- ══════ RECORDS VIEW ══════ -->
+<div id="vL" class="hidden" style="padding:10px 16px 20px"><div id="recL"></div></div>
+<div id="vD" class="hidden" style="padding:10px 16px 20px"><div id="detB"></div></div>
+
+<!-- ══════ REFERENCE VIEW ══════ -->
+<div id="vR" class="hidden" style="padding:10px 16px 20px">
+<div class="cd"><div class="cd-t">📊 VIP Score — Visual Infusion Phlebitis Score</div>
+<div style="font-size:10px;overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:10px">
+<tr style="background:var(--ac);color:#fff"><th style="padding:6px;border:1px solid #005a42">Grade</th><th style="padding:6px;border:1px solid #005a42">อาการ</th><th style="padding:6px;border:1px solid #005a42">Action</th></tr>
+<tr style="background:#e8f5e9"><td style="padding:5px;border:1px solid var(--bd);text-align:center;font-weight:700">0</td><td style="padding:5px;border:1px solid var(--bd)">IV site ปกติ</td><td style="padding:5px;border:1px solid var(--bd)">สังเกตต่อ</td></tr>
+<tr><td style="padding:5px;border:1px solid var(--bd);text-align:center;font-weight:700;color:var(--gn)">1</td><td style="padding:5px;border:1px solid var(--bd)">ปวดเล็กน้อย หรือ แดงเล็กน้อย</td><td style="padding:5px;border:1px solid var(--bd)">สังเกต — อาจเริ่มเป็น Phlebitis</td></tr>
+<tr style="background:#fff8e1"><td style="padding:5px;border:1px solid var(--bd);text-align:center;font-weight:700;color:var(--yw)">2</td><td style="padding:5px;border:1px solid var(--bd)">ปวด + แดง + บวม หรือ 2 อาการขึ้นไป</td><td style="padding:5px;border:1px solid var(--bd)">⚠️ Resite — เริ่มเป็น Phlebitis</td></tr>
+<tr style="background:#fff3e0"><td style="padding:5px;border:1px solid var(--bd);text-align:center;font-weight:700;color:var(--or)">3</td><td style="padding:5px;border:1px solid var(--bd)">ปวด + แดง + เส้นแดง (streak) หรือ 3+ อาการ</td><td style="padding:5px;border:1px solid var(--bd)">🔴 Resite + รักษา + แจ้งแพทย์</td></tr>
+<tr style="background:#ffebee"><td style="padding:5px;border:1px solid var(--bd);text-align:center;font-weight:700;color:var(--rd)">4</td><td style="padding:5px;border:1px solid var(--bd)">ปวด + แดง + เส้นเลือดแข็ง (venous cord)</td><td style="padding:5px;border:1px solid var(--bd)">🚨 Resite + แจ้งแพทย์ทันที</td></tr>
+<tr style="background:#ffcdd2"><td style="padding:5px;border:1px solid var(--bd);text-align:center;font-weight:700;color:var(--rd)">5</td><td style="padding:5px;border:1px solid var(--bd)">เส้นเลือดแข็ง + ไข้ (Thrombophlebitis)</td><td style="padding:5px;border:1px solid var(--bd)">🚨 หยุด IV + Blood C/S + แจ้งแพทย์</td></tr>
+</table></div></div>
+
+<div class="cd"><div class="cd-t">📊 INS Infiltration Scale</div>
+<div style="font-size:10px;overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:10px">
+<tr style="background:var(--ac);color:#fff"><th style="padding:6px;border:1px solid #005a42">Grade</th><th style="padding:6px;border:1px solid #005a42">อาการ</th><th style="padding:6px;border:1px solid #005a42">Action</th></tr>
+<tr style="background:#e8f5e9"><td style="padding:5px;border:1px solid var(--bd);text-align:center;font-weight:700">0</td><td style="padding:5px;border:1px solid var(--bd)">ไม่มีอาการ</td><td style="padding:5px;border:1px solid var(--bd)">สังเกตต่อ</td></tr>
+<tr><td style="padding:5px;border:1px solid var(--bd);text-align:center;font-weight:700;color:var(--gn)">1</td><td style="padding:5px;border:1px solid var(--bd)">ซีด เย็น บวมเล็กน้อย (&lt;1 inch)</td><td style="padding:5px;border:1px solid var(--bd)">สังเกต + พิจารณาย้าย</td></tr>
+<tr style="background:#fff8e1"><td style="padding:5px;border:1px solid var(--bd);text-align:center;font-weight:700;color:var(--yw)">2</td><td style="padding:5px;border:1px solid var(--bd)">ซีด เย็น บวม 1-6 inch + ปวด</td><td style="padding:5px;border:1px solid var(--bd)">⚠️ หยุด IV + ย้าย + ประคบ</td></tr>
+<tr style="background:#fff3e0"><td style="padding:5px;border:1px solid var(--bd);text-align:center;font-weight:700;color:var(--or)">3</td><td style="padding:5px;border:1px solid var(--bd)">ผิวตึงใส บวม &gt;6 inch + ชา + ปวดปานกลาง</td><td style="padding:5px;border:1px solid var(--bd)">🔴 หยุด IV + แจ้งแพทย์ + ยกแขน</td></tr>
+<tr style="background:#ffcdd2"><td style="padding:5px;border:1px solid var(--bd);text-align:center;font-weight:700;color:var(--rd)">4</td><td style="padding:5px;border:1px solid var(--bd)">ตุ่มน้ำ เนื้อตาย หรือ Vesicant/Blood extravasation</td><td style="padding:5px;border:1px solid var(--bd)">🚨 หยุด IV + Aspirate + Antidote + แจ้งแพทย์ทันที</td></tr>
+</table></div></div>
+
+<!-- Extravasation flowchart -->
+<div class="cd"><div class="cd-t">🚨 Extravasation Flowchart — ขั้นตอนปฏิบัติ 10 ขั้น</div>
+<div style="font-size:11px;line-height:1.8;color:var(--tx)">
+<div style="text-align:center;padding:6px;background:var(--rd);color:#fff;border-radius:6px;font-weight:700;margin-bottom:4px">⚠️ เกิด Extravasation</div>
+<div style="text-align:center;color:var(--dm)">↓</div>
+<div style="padding:6px 10px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;margin-bottom:4px"><b>1.</b> หยุดการบริหารยาทันที</div>
+<div style="text-align:center;color:var(--dm)">↓</div>
+<div style="padding:6px 10px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;margin-bottom:4px"><b>2.</b> ประเมินตำแหน่งที่เกิด พร้อมพยาบาลอีก 1 คน + <b>ถ่ายรูป</b> / ขีดบริเวณ</div>
+<div style="text-align:center;color:var(--dm)">↓</div>
+<div style="padding:6px 10px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;margin-bottom:4px"><b>3.</b> ให้ข้อมูลผู้ป่วยเพื่อลดความวิตกกังวล</div>
+<div style="text-align:center;color:var(--dm)">↓</div>
+<div style="padding:6px 10px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;margin-bottom:4px"><b>4.</b> <span style="color:var(--rd)">ยังไม่ต้องดึงเข็มออก</span> + ดูดยาออกให้มากที่สุด</div>
+<div style="text-align:center;color:var(--dm)">↓</div>
+<div style="padding:6px 10px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;margin-bottom:4px"><b>5.</b> ดึงเข็มออก ปิดไว้ <span style="color:var(--rd)">ห้ามกดคลึง</span></div>
+<div style="text-align:center;color:var(--dm)">↓</div>
+<div style="padding:6px 10px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;margin-bottom:4px"><b>6.</b> รายงานแพทย์</div>
+<div style="text-align:center;color:var(--dm)">↓</div>
+<div style="padding:6px 10px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;margin-bottom:4px"><b>7.</b> ให้การรักษาตาม Guideline + คำสั่งแพทย์ (Antidote, ประคบร้อน/เย็น)</div>
+<div style="text-align:center;color:var(--dm)">↓</div>
+<div style="padding:6px 10px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;margin-bottom:4px"><b>8.</b> วัดขนาดบริเวณที่เกิด + บันทึกในเวชระเบียนอย่างละเอียด</div>
+<div style="text-align:center;color:var(--dm)">↓</div>
+<div style="padding:6px 10px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;margin-bottom:4px"><b>9.</b> รายงานอุบัติการณ์ + รายงานหัวหน้าหน่วย</div>
+<div style="text-align:center;color:var(--dm)">↓</div>
+<div style="padding:6px 10px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;margin-bottom:4px"><b>10.</b> แนะนำผู้ป่วยดูแลตนเอง + นัด Follow up 48 ชม.</div>
+</div></div>
+
+<!-- Compress methods -->
+<div class="cd"><div class="cd-t">🩹 วิธีประคบร้อน / ประคบเย็น (ละเอียด)</div>
+<div style="font-size:11px;line-height:1.8">
+<div style="display:flex;gap:8px">
+<div style="flex:1;padding:8px;border-radius:8px;background:rgba(255,56,96,.05);border:1px solid rgba(255,56,96,.15)">
+<b style="color:#ff6b6b">ประคบอุ่น</b><br>
+1. ล้างแผลด้วยน้ำสะอาด<br>
+2. ใช้ผ้าแห้งห่อหุ้มกระเป๋าน้ำร้อน/เจลอุ่น วางที่ผิวหนัง <b>ห้ามกด</b><br>
+3. ประคบสลับ ครั้งละ <b>15 นาที</b> วันละ <b>4 ครั้ง</b> นาน <b>1-2 วัน</b><br>
+4. ยกแขน/บริเวณให้สูงกว่าหัวใจ <b>48 ชม.</b>
+</div>
+<div style="flex:1;padding:8px;border-radius:8px;background:rgba(52,152,219,.05);border:1px solid rgba(52,152,219,.15)">
+<b style="color:#5dade2">ประคบเย็น</b><br>
+1. ล้างแผลด้วยน้ำสะอาด<br>
+2. ใช้ผ้าแห้งห่อหุ้มกระเป๋าน้ำแข็ง/cold pack วางที่ผิวหนัง <b>ห้ามกด</b><br>
+3. ประคบสลับ ครั้งละ <b>15 นาที</b> วันละ <b>4 ครั้ง</b> นาน <b>1-2 วัน</b><br>
+4. ยกแขน/บริเวณให้สูงกว่าหัวใจ <b>48 ชม.</b>
+</div>
+</div>
+<div style="margin-top:6px;padding:6px 8px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;font-size:10px">
+<b>หลักการ:</b><br>
+• <b style="color:#ff6b6b">ประคบร้อน</b> → ขยายหลอดเลือด กระจายยา ลดความเข้มข้น → ใช้กับ <b>Vinca alkaloids, Taxane, Vasopressors</b><br>
+• <b style="color:#5dade2">ประคบเย็น</b> → หดหลอดเลือด จำกัดยาไม่ให้กระจาย → ใช้กับ <b>Anthracycline</b> และยาที่ทำลายเนื้อเยื่อ
+</div>
+</div></div>
+
+<!-- High-risk patients -->
+<div class="cd"><div class="cd-t">⚠️ ผู้ป่วยกลุ่มเสี่ยงสูง — ต้องเฝ้าระวังพิเศษ</div>
+<div style="font-size:11px;line-height:1.8;color:var(--tx)">
+• ผู้ที่ <b>สื่อสารไม่ได้</b> หรือไม่รู้สึกตัว (ใส่ท่อช่วยหายใจ, sedation)<br>
+• ผู้ที่มี <b>ปัญหาชา ปลายมือปลายเท้า</b> — เบาหวาน, peripheral neuropathy<br>
+• ผู้ป่วย <b>SVC obstruction</b> หรือ Lymphoedema<br>
+• ผู้ป่วยผ่าตัดเต้านม (MRM) — แขนบวม/ต่อมน้ำเหลืองอุดตัน<br>
+• ผู้ที่ <b>หาหลอดเลือดยาก</b> และต้องแทงซ้ำหลายครั้ง<br>
+• <b>เด็ก หรือ ผู้สูงอายุ</b> — เนื้อเยื่อ/หลอดเลือดไม่แข็งแรง ไม่สามารถบอกอาการ<br>
+• ผู้ป่วยที่เคย <b>ฉายรังสีหรือผ่าตัด</b> บริเวณที่แทงเข็ม
+</div></div>
+
+<!-- Documentation checklist -->
+<div class="cd"><div class="cd-t">📝 Checklist การบันทึกเมื่อเกิด Extravasation</div>
+<div style="font-size:11px;line-height:1.8;color:var(--tx)">
+☐ วัน เดือน ปี และเวลาที่เกิดเหตุการณ์<br>
+☐ ชนิดของเข็มฉีดยา + ขนาด<br>
+☐ บริเวณที่เกิด + ความกว้างของการรั่วซึม<br>
+☐ <b>ถ่ายภาพ</b> จดวันที่และเวลา เป็นระยะ (ติดตามการเปลี่ยนแปลง)<br>
+☐ ชนิดยา ความเข้มข้น ปริมาณยาที่รั่วซึม<br>
+☐ วิธีบริหารยา (IV push / IV drip)<br>
+☐ อาการที่ผู้ป่วยบอก (ปวด แสบ ร้อน ชา)<br>
+☐ สิ่งที่สังเกตพบ (บวม แดง ร้อน ไม่สุขสบายจากการเคลื่อนไหว)<br>
+☐ ลำดับขั้นตอนปฏิบัติการช่วยเหลือทั้งหมด<br>
+☐ คำแนะนำผู้ป่วย: ประเมินผิวหนัง วัดไข้ บันทึกปวด<br>
+☐ นัดติดตามอาการภายใน 48 ชม.
+</div>
+<div class="al g" style="margin-top:8px">💡 <b>IV Care Buddy บันทึกข้อมูลเหล่านี้อัตโนมัติ</b> — ถ่ายรูป timestamp, วงบริเวณ, ชื่อยา, Grade, อาการ, ผู้ประเมิน ครบถ้วนในทุก record</div>
+</div>
+
+<!-- Prevention -->
+<div class="cd"><div class="cd-t">🛡️ การป้องกัน Extravasation</div>
+<div style="font-size:11px;line-height:1.8;color:var(--tx)">
+<b>1.</b> ผู้ปฏิบัติต้องมีความรู้ ทักษะ ประสบการณ์<br>
+<b>2.</b> ตระหนักถึงภาวะเสี่ยง — ยา Vesicant ควรให้เป็นอันดับแรก<br>
+<b>3.</b> ใช้เข็มเบอร์ 22-24 ยืดหยุ่น ใช้ครั้งเดียว ไม่ใช้เข็มเหล็ก<br>
+<b>4.</b> เลือกหลอดเลือดที่ใหญ่ ตรง เรียบ ยืดหยุ่น — ควรหลังมือ<br>
+<b>5.</b> สอนผู้ป่วยรายงานทันทีเมื่อรู้สึกเจ็บ ปวด แสบร้อน<br>
+<b>6.</b> ทดสอบ Blood return + free flow ก่อนให้ยา<br>
+<b>7.</b> ปิด Transparent dressing เพื่อสังเกตการรั่วซึม<br>
+<b>8.</b> เฝ้าระวังพิเศษในกลุ่มเสี่ยงสูง<br>
+<b>9.</b> แยก Flare reaction กับ Extravasation ให้ได้<br>
+<b>10.</b> บันทึกแผนการพยาบาลอย่างละเอียด
+</div></div>
+</div>
+
+<!-- ══════ CLOUD VIEW ══════ -->
+<div id="vC" class="hidden" style="padding:10px 16px 20px">
+<div class="cloud-card">
+<h3>☁️ สถานะ Cloud</h3>
+<div class="cloud-status off" id="cloudStatusBox">
+<span>⚠️</span> <span id="cloudStatusText">ยังไม่ได้เชื่อมต่อ Backend</span>
+</div>
+<p style="font-size:10px;color:var(--dm);margin-top:8px;line-height:1.5">เมื่อเชื่อมต่อแล้ว ข้อมูลทุกรายการจะบันทึกขึ้น Google Sheets + รูปเก็บใน Google Drive อัตโนมัติ</p>
+</div>
+<div class="cloud-card">
+<h3>🔧 ตั้งค่า Backend URL</h3>
+<div class="fg"><label class="fl">Google Apps Script Web App URL</label><input class="fi" id="backendUrl" placeholder="https://script.google.com/macros/s/..." oninput="onBackendUrlChange()"></div>
+<button class="btn btn-p" onclick="testConnection()" style="margin-top:8px">🔗 ทดสอบการเชื่อมต่อ</button>
+<div id="connTestResult" style="margin-top:8px"></div>
+</div>
+<div class="cloud-card">
+<h3>📊 สถิติ Cloud</h3>
+<div id="cloudStats" style="font-size:12px;color:var(--dm)">ยังไม่ได้เชื่อมต่อ</div>
+</div>
+<div class="cloud-card">
+<h3>📋 วิธีตั้งค่า</h3>
+<div style="font-size:11px;line-height:1.8;color:var(--tx)">
+<b>1.</b> เปิด <a href="https://script.google.com" target="_blank" style="color:var(--ac)">Google Apps Script</a> → สร้าง Project ใหม่<br>
+<b>2.</b> วาง Code จากไฟล์ <b>backend-gas/Code.gs</b><br>
+<b>3.</b> ตั้งค่า SHEET_ID, DRIVE_FOLDER_ID<br>
+<b>4.</b> Deploy → Web app → Anyone can access<br>
+<b>5.</b> Copy URL มาวางในช่องด้านบน<br>
+<b>6.</b> กดทดสอบการเชื่อมต่อ ✅
+</div>
+</div>
+</div>
+
+<!-- ══════ BOTTOM BUTTONS ══════ -->
+<div class="bot" id="bot"><button class="btn btn-o" id="bB" onclick="prev()" style="flex:.35;display:none">← กลับ</button><button class="btn btn-p" id="bN" onclick="doNext()">ถัดไป →</button></div>
+<canvas id="sumCvs" style="display:none"></canvas>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// IV Care Buddy v5.0 — JavaScript
+// ══════════════════════════════════════════════════════
+
+const $=id=>document.getElementById(id), V=id=>$(id).value.trim();
+
+// ══════ LINE BROWSER DETECTION ══════
+(function(){
+  const ua=navigator.userAgent||'';
+  const isLine=/Line\//i.test(ua);
+  const isKakao=/KAKAOTALK/i.test(ua);
+  const isFB=/FBAN|FBAV/i.test(ua);
+  if(isLine||isKakao||isFB){
+    const w=document.getElementById('lineBrowserWarn');
+    if(w)w.style.display='block';
+  }
+})();
+function openInExtBrowser(){
+  const url=window.location.href;
+  // LINE: open in external browser
+  if(/Line\//i.test(navigator.userAgent)){
+    window.location.href=url+'?openExternalBrowser=1';
+    setTimeout(()=>{window.open(url,'_system');},300);
+  }else{
+    window.open(url,'_blank');
+  }
+}
+
+// ══════ BACKEND CONFIG ══════
+let BACKEND_URL = localStorage.getItem('ivcb5_backend') || '';
+
+// ══════ TOAST SYSTEM ══════
+function toast(msg, type='info', duration=3000) {
+  const w=$('toastWrap');
+  const t=document.createElement('div');
+  t.className='toast '+type;
+  const icons={success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
+  t.innerHTML=(icons[type]||'')+'<span>'+msg+'</span>';
+  w.appendChild(t);
+  setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),300)},duration);
+}
+
+// ══════ CLOUD STATUS ══════
+function updateCloudBadge(){
+  const b=$('cloudBadge'),d=$('cloudDot');
+  if(BACKEND_URL){b.className='cloud-badge';b.innerHTML='<span class="cloud-dot pulse"></span> Cloud';$('cloudStatusBox').className='cloud-status ok';$('cloudStatusText').textContent='เชื่อมต่อแล้ว';$('cloudSaveBox').classList.remove('hidden')}
+  else{b.className='cloud-badge off';b.innerHTML='<span class="cloud-dot"></span> Offline';$('cloudStatusBox').className='cloud-status off';$('cloudStatusText').textContent='ยังไม่ได้เชื่อมต่อ Backend';$('cloudSaveBox').classList.add('hidden')}
+}
+function onBackendUrlChange(){
+  BACKEND_URL=V('backendUrl');
+  localStorage.setItem('ivcb5_backend',BACKEND_URL);
+  updateCloudBadge();
+}
+async function testConnection(){
+  const box=$('connTestResult');
+  if(!BACKEND_URL){box.innerHTML='<div class="al y">⚠️ กรุณาใส่ URL ก่อน</div>';return}
+  box.innerHTML='<div class="al info" style="background:rgba(45,156,219,.06);border:1px solid rgba(45,156,219,.2);color:#2d9cdb"><span class="spinner-dark"></span> กำลังทดสอบ...</div>';
+  try{
+    const r=await fetch(BACKEND_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'testConnection'})});
+    const d=await r.json();
+    if(d.success){box.innerHTML='<div class="al g">✅ เชื่อมต่อสำเร็จ! '+d.message+'</div>';toast('เชื่อมต่อ Cloud สำเร็จ!','success');updateCloudBadge()}
+    else{box.innerHTML='<div class="al r">❌ '+d.error+'</div>';toast('เชื่อมต่อไม่สำเร็จ','error')}
+  }catch(e){box.innerHTML='<div class="al r">❌ ไม่สามารถเชื่อมต่อ: '+e.message+'</div>';toast('เชื่อมต่อล้มเหลว','error')}
+}
+async function saveToCloud(){
+  const r=window._res;if(!r)return;
+  const btn=$('btnCloudSave'),stat=$('cloudSaveStatus');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> กำลังบันทึก...';stat.textContent='';
+  try{
+    const payload={...r,action:'save',photo:r.photo||null,summaryImage:null};
+    // Don't send huge base64 for summary
+    delete payload.summaryImage;
+    const resp=await fetch(BACKEND_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+    const d=await resp.json();
+    if(d.success){
+      btn.innerHTML='✅ บันทึก Cloud สำเร็จ!';btn.style.background='linear-gradient(135deg,var(--gn),var(--ac2))';
+      stat.innerHTML='<span style="color:var(--gn)">✅ '+d.message+'</span>';
+      toast(d.message,'success');
+    }else{throw new Error(d.error||'Unknown error')}
+  }catch(e){
+    btn.innerHTML='❌ ลองอีกครั้ง';btn.style.background='linear-gradient(135deg,var(--rd),#c0392b)';
+    stat.innerHTML='<span style="color:var(--rd)">❌ '+e.message+'</span>';
+    toast('บันทึก Cloud ไม่สำเร็จ: '+e.message,'error');
+    setTimeout(()=>{btn.disabled=false;btn.innerHTML='☁️ บันทึกขึ้น Cloud';btn.style.background=''},3000);
+  }
+}
+
+// ══════ HIGH-ALERT DRUG DATABASE ══════
+const HIGH_ALERT_DRUGS = [
+  // RED: VASOPRESSORS
+  {name:"Norepinephrine",alias:["NE","Levophed","นอร์อิพิเนฟริน"],level:"RED",cat:"Vasopressor (pH 3.0-4.5)",antidote:"Phentolamine® 5-10mg in Saline 10-15ml SQ รอบบริเวณ หรือ 2% Nitroglycerin oint. q8h",compress:"warm",note:"รายงาน extravasation มากที่สุดในกลุ่ม vasopressors"},
+  {name:"Epinephrine",alias:["Adrenaline","อิพิเนฟริน"],level:"RED",cat:"Vasopressor (pH 2.2-5.0)",antidote:"Phentolamine SC หรือ Terbutaline 1mg in NSS 10ml SC",compress:"warm"},
+  {name:"Dopamine",alias:["โดพามีน"],level:"RED",cat:"Vasopressor (pH 2.5-5.0)",antidote:"Phentolamine SC",compress:"warm"},
+  {name:"Dobutamine",alias:["โดบูทามีน"],level:"RED",cat:"Vasopressor (pH 2.5-5.5)",antidote:"Phentolamine SC",compress:"warm"},
+  {name:"Vasopressin",alias:["วาโซเพรสซิน"],level:"RED",cat:"Vasopressor",antidote:"Phentolamine SC + Nitroglycerin topical",compress:"warm"},
+  {name:"Phenylephrine",alias:["Neo-Synephrine","ฟีนิลเอฟริน"],level:"RED",cat:"Vasopressor",antidote:"Phentolamine SC",compress:"warm"},
+  // RED: HIGH pH
+  {name:"Phenytoin",alias:["Dilantin","เฟนิโทอิน"],level:"RED",cat:"Anticonvulsant (pH 10.0)",antidote:"Hyaluronidase SC",compress:"both",note:"ประคบเย็นถ้าอักเสบ/ปวด ประคบร้อนถ้าซีด"},
+  {name:"Acyclovir",alias:["อะไซโคลเวียร์"],level:"RED",cat:"Antiviral (pH 11.0)",antidote:"Hyaluronidase SC",compress:"cold"},
+  {name:"Phenobarbital",alias:["ฟีโนบาร์บิทอล"],level:"RED",cat:"Anticonvulsant (pH 9.2-10.2)",antidote:"-",compress:"cold"},
+  {name:"Sodium Bicarbonate",alias:["NaHCO3","โซเดียมไบคาร์บอเนต"],level:"RED",cat:"Alkalinizer (pH สูง, 1790 mOsm/L)",antidote:"Hyaluronidase SC",compress:"both"},
+  {name:"Ampicillin",alias:["แอมพิซิลลิน"],level:"YELLOW",cat:"Antibiotic (pH 8-10)",antidote:"-",compress:"cold"},
+  // RED: HIGH OSMOLARITY
+  {name:"Calcium Chloride",alias:["CaCl2","แคลเซียมคลอไรด์"],level:"RED",cat:"Electrolyte (Osm สูง)",antidote:"Hyaluronidase SC ภายใน 1 ชม.",compress:"both"},
+  {name:"Calcium Gluconate 10%",alias:["แคลเซียมกลูโคเนต"],level:"RED",cat:"Electrolyte (697 mOsm/L)",antidote:"Hyaluronidase SC",compress:"both"},
+  {name:"Potassium Chloride",alias:["KCl","โพแทสเซียม","KCl 10%","KCl 20%"],level:"RED",cat:"Electrolyte (4000 mOsm/L, pH 2.5-6.5)",antidote:"Hyaluronidase SC",compress:"both"},
+  {name:"Dipotassium Phosphate",alias:["โพแทสเซียมฟอสเฟต"],level:"RED",cat:"Electrolyte (7400 mOsm/L)",antidote:"Hyaluronidase SC",compress:"cold"},
+  {name:"Sodium Chloride 3%",alias:["NSS 3%","3%NaCl"],level:"RED",cat:"Hypertonic (1030 mOsm/L, pH 4.8)",antidote:"Hyaluronidase SC",compress:"both"},
+  {name:"Promethazine",alias:["Phenergan","โพรเมทาซีน"],level:"RED",cat:"Antihistamine",antidote:"ไม่มี antidote เฉพาะ",compress:"cold"},
+  // RED: CHEMO VESICANTS
+  {name:"Dactinomycin",alias:["แดคติโนไมซิน"],level:"RED",cat:"Chemo-Vesicant",antidote:"Steroid cream / ประคบเย็น",compress:"cold"},
+  {name:"Doxorubicin",alias:["Adriamycin","ดอกโซรูบิซิน"],level:"RED",cat:"Chemo-Vesicant (Anthracycline)",antidote:"Hyaluronidase 15u/ml SQ หรือ Dexrazoxane IV (ถ้ามี)",compress:"cold"},
+  {name:"Idarubicin",alias:["ไอดารูบิซิน"],level:"RED",cat:"Chemo-Vesicant (Anthracycline)",antidote:"DMSO topical",compress:"cold"},
+  {name:"Mitomycin C",alias:["ไมโทไมซิน"],level:"RED",cat:"Chemo-Vesicant",antidote:"DMSO topical",compress:"cold"},
+  {name:"Trabectedin",alias:["ทราเบคเทดิน"],level:"RED",cat:"Chemo-Vesicant",antidote:"Steroid cream",compress:"cold"},
+  {name:"Vinblastine",alias:["วินบลาสทีน"],level:"RED",cat:"Chemo-Vesicant (Vinca)",antidote:"Hyaluronidase SC",compress:"warm",note:"Vinca alkaloids ต้องประคบร้อน!"},
+  {name:"Vincristine",alias:["วินคริสทีน"],level:"RED",cat:"Chemo-Vesicant (Vinca)",antidote:"Hyaluronidase SC",compress:"warm",note:"Vinca alkaloids ต้องประคบร้อน!"},
+  {name:"Vinorelbine",alias:["วิโนเรลบีน"],level:"RED",cat:"Chemo-Vesicant (Vinca)",antidote:"Hyaluronidase SC",compress:"warm"},
+  {name:"Daunorubicin",alias:["ดอโนรูบิซิน"],level:"RED",cat:"Chemo-Vesicant (Anthracycline)",antidote:"Dexrazoxane IV",compress:"cold"},
+  {name:"Epirubicin",alias:["อีพิรูบิซิน"],level:"RED",cat:"Chemo-Vesicant (Anthracycline)",antidote:"Dexrazoxane IV",compress:"cold"},
+  // YELLOW: CHEMO IRRITANTS
+  {name:"Bendamustine",alias:["เบนดามัสทีน"],level:"YELLOW",cat:"Chemo-Irritant",antidote:"Steroid cream",compress:"cold"},
+  {name:"Carboplatin",alias:["คาร์โบพลาติน"],level:"YELLOW",cat:"Chemo-Irritant",antidote:"Steroid cream",compress:"warm"},
+  {name:"Cisplatin",alias:["ซิสพลาติน"],level:"YELLOW",cat:"Chemo-Irritant",antidote:"Steroid cream",compress:"warm"},
+  {name:"Docetaxel",alias:["โดซีแทกเซล"],level:"YELLOW",cat:"Chemo-Irritant (Taxane)",antidote:"Steroid cream",compress:"warm"},
+  {name:"Etoposide",alias:["อีโทโพไซด์"],level:"YELLOW",cat:"Chemo-Irritant",antidote:"Steroid cream",compress:"warm",note:"ห้ามประคบเย็น — ใช้ประคบร้อน"},
+  {name:"Fluorouracil",alias:["5-FU","ฟลูออโรยูราซิล"],level:"YELLOW",cat:"Chemo-Irritant",antidote:"Steroid cream",compress:"cold"},
+  {name:"Oxaliplatin",alias:["ออกซาลิพลาติน"],level:"YELLOW",cat:"Chemo-Irritant",antidote:"Steroid cream",compress:"warm",note:"ห้ามประคบเย็น"},
+  {name:"Paclitaxel",alias:["Taxol","แพคลิแทกเซล"],level:"YELLOW",cat:"Chemo-Irritant (Taxane)",antidote:"Steroid cream / Hyaluronidase",compress:"warm"},
+  {name:"Mitoxantrone",alias:["ไมทอกแซนโทรน"],level:"YELLOW",cat:"Chemo-Irritant",antidote:"DMSO topical",compress:"cold"},
+  {name:"Gemcitabine",alias:["เจมไซทาบีน"],level:"YELLOW",cat:"Chemo-Irritant",antidote:"Steroid cream",compress:"cold"},
+  {name:"Irinotecan",alias:["ไอริโนทีแคน"],level:"YELLOW",cat:"Chemo-Irritant",antidote:"Steroid cream",compress:"cold"},
+  {name:"Methotrexate",alias:["เมโธเทร็กเซท","MTX"],level:"YELLOW",cat:"Chemo-Irritant",antidote:"Steroid cream",compress:"cold"},
+  // YELLOW: NON-CHEMO HIGH RISK
+  {name:"Amiodarone",alias:["อะมิโอดาโรน"],level:"YELLOW",cat:"Antiarrhythmic (pH 4.1)",antidote:"-",compress:"cold",note:">250mg/100ml เพิ่มความเสี่ยง"},
+  {name:"Vancomycin",alias:["แวนโคไมซิน"],level:"YELLOW",cat:"Antibiotic (pH 2.5-4.5)",antidote:"Hyaluronidase SC",compress:"cold"},
+  {name:"Cloxacillin",alias:["คล็อกซาซิลลิน"],level:"YELLOW",cat:"Antibiotic (pH 2.5-5.5)",antidote:"-",compress:"cold"},
+  {name:"Ciprofloxacin",alias:["ไซโปรฟลอกซาซิน"],level:"YELLOW",cat:"Antibiotic (pH 3.3-4.6)",antidote:"-",compress:"cold"},
+  {name:"TPN",alias:["Total Parenteral Nutrition","สารอาหารทางเส้นเลือด","Parenteral Nutrition"],level:"YELLOW",cat:"Nutrition (750-900+ mOsm/L)",antidote:"Hyaluronidase SC + Hydrocortisone cream 1%",compress:"both"},
+  {name:"D50W",alias:["50% Dextrose","เดกซ์โตรส 50%","Dextrose 50%"],level:"YELLOW",cat:"Hyperosmolar (>2500 mOsm/L)",antidote:"Hyaluronidase SC",compress:"cold"},
+  {name:"Dextrose 10%",alias:["D10W","10%DW"],level:"YELLOW",cat:"Hyperosmolar (>500 mOsm/L)",antidote:"Hyaluronidase SC",compress:"cold"},
+  {name:"Mannitol 20%",alias:["แมนนิทอล"],level:"YELLOW",cat:"Hyperosmolar (1098 mOsm/L)",antidote:"-",compress:"cold"},
+  {name:"MgSO4 50%",alias:["Magnesium Sulfate","แมกนีเซียมซัลเฟต"],level:"YELLOW",cat:"Electrolyte (4057 mOsm/L)",antidote:"-",compress:"cold"},
+  {name:"Nicardipine",alias:["นิคาร์ดิปีน"],level:"YELLOW",cat:"CCB (pH 3.7-4.7)",antidote:"-",compress:"cold"},
+  {name:"Aminophylline",alias:["อะมิโนฟิลลิน"],level:"YELLOW",cat:"Bronchodilator (pH 8.6-9)",antidote:"-",compress:"cold"},
+  {name:"Furosemide",alias:["ฟูโรซีไมด์","Lasix"],level:"YELLOW",cat:"Diuretic (pH 8.8-9.3)",antidote:"-",compress:"cold"},
+  {name:"Morphine",alias:["มอร์ฟีน"],level:"YELLOW",cat:"Opioid (pH 2.5-6.5)",antidote:"Hyaluronidase SQ",compress:"cold"},
+  {name:"Diazepam",alias:["ไดอะซีแพม"],level:"YELLOW",cat:"Benzodiazepine (pH 6.2-6.9, Vesicant per SOP)",antidote:"Hyaluronidase SQ",compress:"cold"},
+  {name:"Amphotericin B",alias:["แอมโฟเทอริซิน"],level:"YELLOW",cat:"Antifungal (pH 7.2-8.0, Vesicant per SOP)",antidote:"Hyaluronidase 15u/ml in Saline SQ",compress:"cold"},
+  // FROM SOP-PHA-065
+  {name:"Amikacin",alias:["อะมิคาซิน"],level:"YELLOW",cat:"Antibiotic (pH 3.5-5.5)",antidote:"Hyaluronidase 15u/ml SQ",compress:"cold"},
+  {name:"Cefazolin",alias:["เซฟาโซลิน"],level:"YELLOW",cat:"Antibiotic (pH 4.5-8.5)",antidote:"Hyaluronidase SQ",compress:"cold"},
+  {name:"Cefotaxime",alias:["เซโฟแทกซีม"],level:"YELLOW",cat:"Antibiotic (pH 4.5-6.5, Vesicant per SOP)",antidote:"Hyaluronidase SQ",compress:"cold"},
+  {name:"Cefoperazone+Sulbactam",alias:["Sulperazon","เซโฟเพอราโซน"],level:"YELLOW",cat:"Antibiotic (pH 4.5-6.5)",antidote:"Hyaluronidase SQ",compress:"cold"},
+  {name:"Cotrimoxazole",alias:["SMZ/TM","โคไตรม็อกซาโซล"],level:"YELLOW",cat:"Antibiotic (pH 9.5-10.5, Vesicant per SOP)",antidote:"Hyaluronidase SQ",compress:"cold"},
+  {name:"Digoxin",alias:["ดิจ๊อกซิน"],level:"YELLOW",cat:"Cardiac glycoside (pH 6.7-7.3, Vesicant per SOP)",antidote:"Hyaluronidase SQ",compress:"cold"},
+  {name:"Fe hydroxide sucrose",alias:["Venofer","เหล็กฉีด","Iron sucrose"],level:"YELLOW",cat:"Iron supplement (pH 10.5-11.1, Vesicant per SOP)",antidote:"Hyaluronidase SQ",compress:"cold"},
+  {name:"Pethidine",alias:["Meperidine","เพทิดีน"],level:"YELLOW",cat:"Opioid (pH 3.5-6)",antidote:"Hyaluronidase SQ",compress:"cold"},
+  {name:"Cyclophosphamide",alias:["ไซโคลฟอสฟาไมด์"],level:"YELLOW",cat:"Chemo Non-Vesicant",antidote:"Hyaluronidase SQ",compress:"cold"},
+  {name:"Radio Contrast",alias:["Iopamidol","Telebrix","สารทึบรังสี","Contrast media"],level:"YELLOW",cat:"Contrast (Osm 600-616, Vesicant per SOP)",antidote:"Hyaluronidase SQ",compress:"cold"},
+  {name:"D-10-W",alias:["Dextrose 10%","D-10-S","10%DW"],level:"YELLOW",cat:"Hyperosmolar (505 mOsm/L, pH 3.2-6.5, Vesicant per SOP)",antidote:"Hyaluronidase 15u/ml SQ",compress:"warm"},
+  {name:"Glucolyte-2",alias:["กลูโคไลท์"],level:"YELLOW",cat:"Nutrition (620 mOsm/L, pH 4-7, Vesicant per SOP)",antidote:"Hyaluronidase SQ",compress:"warm"},
+];
+
+const COMMON_FLUIDS = [
+  "NSS (0.9% NaCl)","NSS/2","D-5-W","D-5-S","D-5-NSS","D-5-NSS/2",
+  "D-10-W","D-10-S","Lactated Ringer's (LRS)","Acetar","Sterile Water",
+  "RLS","Haemaccel","Gelafundin","Voluven","Albumin 5%","Albumin 20%",
+  "Packed Red Cell","Fresh Frozen Plasma","Platelet Concentrate",
+  "Whole Blood","Cryoprecipitate",
+  "NSS 3%","D-50-W","Mannitol 20%","MgSO4 50%","NaHCO3 7.5%",
+  "KCl 20 mEq/10ml","Calcium Gluconate 10%","Calcium Chloride",
+  "Norepinephrine","Epinephrine","Dopamine","Dobutamine","Vasopressin",
+  "Phenylephrine","Amiodarone","Nicardipine",
+  "TPN","Kabiven","Kidmin","Aminoven","Glucolyte-2",
+  "Vancomycin","Ampicillin","Cefazolin","Cefotaxime","Ceftriaxone",
+  "Cloxacillin","Ciprofloxacin","Meropenem","Piperacillin/Tazobactam",
+  "Cotrimoxazole","Amphotericin B","Acyclovir","Metronidazole",
+  "Amikacin","Gentamicin",
+  "Phenytoin","Phenobarbital","Diazepam","Midazolam",
+  "Morphine","Fentanyl","Pethidine","Tramadol",
+  "Furosemide","Aminophylline","Digoxin","Heparin","Insulin",
+  "Omeprazole","Pantoprazole","Ranitidine","Ondansetron",
+  "Dexamethasone","Hydrocortisone","Methylprednisolone",
+  "Doxorubicin","Vincristine","Paclitaxel","Carboplatin","Cisplatin",
+  "Cyclophosphamide","5-FU","Oxaliplatin","Etoposide","Irinotecan",
+  "Methotrexate","Gemcitabine","Docetaxel","Vinblastine",
+  "Venofer","Ferinject","Contrast media",
+];
+
+// ══════ DRUG SEARCH ══════
+function onDrugInput(){
+  const v=V("fFl").toLowerCase(), drop=$("drugDrop"), box=$("drugAlertBox");
+  if(!v||v.length<1){drop.style.display="none";box.innerHTML="";return}
+  const alertMatches=HIGH_ALERT_DRUGS.filter(d=>{
+    if(d.name.toLowerCase().includes(v))return true;
+    return d.alias.some(a=>a.toLowerCase().includes(v));
+  }).slice(0,8);
+  const commonMatches=COMMON_FLUIDS.filter(f=>f.toLowerCase().includes(v)&&!alertMatches.some(a=>a.name.toLowerCase()===f.toLowerCase())).slice(0,6);
+  if(alertMatches.length===0&&commonMatches.length===0){drop.style.display="none";checkDrugAlert();return}
+  let html="";
+  alertMatches.forEach(d=>{
+    const isRed=d.level==="RED";
+    html+='<div class="dd-item" onclick="selectDrug(\''+d.name.replace(/'/g,"\\'")+'\')">';
+    html+='<div class="dd-name">'+d.name+' <span class="dd-level '+(isRed?"dd-red":"dd-yel")+'">'+(isRed?"🚨 VESICANT":"⚠️ IRRITANT")+'</span></div>';
+    html+='<div class="dd-cat">'+d.cat+'</div></div>';
+  });
+  commonMatches.forEach(f=>{
+    html+='<div class="dd-item" onclick="selectDrug(\''+f.replace(/'/g,"\\'")+'\')">';
+    html+='<div class="dd-name">'+f+'</div><div class="dd-cat" style="color:var(--gn)">✅ สารน้ำทั่วไป</div></div>';
+  });
+  drop.innerHTML=html;drop.style.display="block";checkDrugAlert();
+}
+function selectDrug(name){$("fFl").value=name;$("drugDrop").style.display="none";checkDrugAlert()}
+document.addEventListener("click",function(e){if(!e.target.closest("#fFl")&&!e.target.closest("#drugDrop")){$("drugDrop").style.display="none"}});
+function checkDrugAlert(){
+  const v=V("fFl").toLowerCase(), box=$("drugAlertBox");
+  if(!v||v.length<2){box.innerHTML="";return}
+  const match=HIGH_ALERT_DRUGS.find(d=>{if(d.name.toLowerCase().includes(v))return true;return d.alias.some(a=>a.toLowerCase().includes(v))});
+  if(match){
+    const isRed=match.level==="RED";
+    const compTxt=match.compress==="warm"?"🔴 ประคบร้อนเท่านั้น (Warm compress)":match.compress==="cold"?"🔵 ประคบเย็น (Cold compress)":"🟡 ตามอาการ (ถ้าซีด→ร้อน / ถ้าอักเสบ→เย็น)";
+    box.innerHTML='<div class="drug-alert" style="border-color:'+(isRed?"var(--rd)":"var(--yw)")+';background:'+(isRed?"rgba(255,56,96,.1)":"rgba(254,202,87,.08)")+'"><div style="font-size:13px;font-weight:800;color:'+(isRed?"var(--rd)":"var(--yw)")+'">'+(isRed?"🚨 HIGH ALERT — VESICANT":"⚠️ CAUTION — IRRITANT")+'</div><div style="font-size:11px;color:var(--tx);margin-top:4px;line-height:1.6"><b>'+match.name+'</b> ('+match.cat+')<br>🧪 Antidote: '+match.antidote+'<br>🩹 '+compTxt+(match.note?'<br>📌 '+match.note:'')+'<br>'+(isRed?'<span style="color:var(--rd)">⚠️ Extravasation → แจ้งแพทย์ทันที + หยุด IV + Aspirate + ให้ Antidote</span>':'พิจารณา Central line สำหรับ infusion ต่อเนื่อง')+'</div></div>';
+  }else{box.innerHTML=""}
+}
+
+// ══════ DATA CONSTANTS ══════
+const WARDS_PTS=["5A","6A","6B","7A","7B","8A","8B","9A","9B","10A","10B","11A","11B","12Platinum","ICU","CCU","NICU","ER","OPD","OR/Recovery","LR"];
+const WARDS_GENERAL=["ICU","CCU","Ward ศัลยกรรม","Ward อายุรกรรม","Ward สูติ-นรีเวช","Ward กุมารเวชกรรม","ER","OPD","OR/Recovery","NICU"];
+let WARDS=WARDS_PTS;
+const SITES=["มือซ้าย","มือขวา","แขนซ้าย","แขนขวา","ข้อพับซ้าย (ACF)","ข้อพับขวา (ACF)","เท้าซ้าย","เท้าขวา","Scalp"];
+const GAUGES=["18G","20G","22G","24G","26G"];
+const SKIN=[{id:"erythema",th:"แดง (Erythema)",en:"Redness",ic:"🔴"},{id:"blanched",th:"ซีดขาว (Blanched)",en:"Whitening",ic:"⚪"},{id:"swelling",th:"บวม (Edema)",en:"Swelling",ic:"🫧"},{id:"induration",th:"แข็งตึง (Induration)",en:"Hardening",ic:"🪨"},{id:"warmth",th:"อุ่น (Warm)",en:"Warm to touch",ic:"🌡️"},{id:"cool",th:"เย็น (Cool)",en:"Cool to touch",ic:"❄️"},{id:"streak",th:"เส้นแดงตามเส้นเลือด",en:"Red streak",ic:"〰️"},{id:"leaking",th:"น้ำซึม (Leaking)",en:"Fluid leaking",ic:"💧"},{id:"translucent",th:"ผิวตึงโปร่งใส",en:"Translucent skin",ic:"✨"},{id:"bruised",th:"ช้ำ (Bruised)",en:"Discolored",ic:"🟣"}];
+const VASC=[{id:"pulse_weak",th:"ชีพจรส่วนปลายอ่อน",en:"Weak pulse",ic:"💓"},{id:"numbness",th:"ชา/เสียวซ่า",en:"Numbness",ic:"🖐️"},{id:"rom_dec",th:"ขยับข้อลำบาก",en:"↓ROM",ic:"🤏"},{id:"color_chg",th:"ปลายนิ้วเปลี่ยนสี",en:"Cyanosis",ic:"🫳"}];
+const SEV=[{id:"blister",th:"ตุ่มน้ำ (Blister)",en:"Blistering",ic:"🫧"},{id:"necrosis",th:"เนื้อตาย (Necrosis)",en:"Necrotic tissue",ic:"⬛"},{id:"ulcer",th:"แผล (Ulcer)",en:"Open wound",ic:"🩸"},{id:"venous_cord",th:"เส้นเลือดแข็ง",en:"Venous cord",ic:"🪢"},{id:"purulent",th:"หนอง (Purulent)",en:"Pus",ic:"🟡"},{id:"pyrexia",th:"ไข้ ≥38°C",en:"Fever",ic:"🤒"},{id:"vesicant",th:"⚠️ Vesicant/Irritant/Blood",en:"Auto Grade 4",ic:"☢️"}];
+const FACES=[{n:0,e:"😊"},{n:1,e:"🙂"},{n:2,e:"😐"},{n:3,e:"😕"},{n:4,e:"😣"},{n:5,e:"😖"},{n:6,e:"😩"},{n:7,e:"😫"},{n:8,e:"😭"},{n:9,e:"🤯"},{n:10,e:"💀"}];
+
+// ══════ STATE ══════
+let step=1,painScore=-1,photoData=null,capState="idle",capStart=0,capSec=null,capInt=null;
+let ovalData=null,ovalDrag=null;
+let records=[];
+try{const s=localStorage.getItem("ivcb4");if(s)records=JSON.parse(s)}catch(e){}
+
+// ══════ REASSESSMENT / FOLLOW-UP TRACKING ══════
+let _patientHistory=null; // cached results for current HN
+let _fuDebounce=null;
+
+function checkPatientHistory(){
+  clearTimeout(_fuDebounce);
+  _fuDebounce=setTimeout(()=>_doCheckHistory(), 400);
+}
+
+function _doCheckHistory(){
+  const hn=V("fHN").trim();
+  const panel=$("fuPanel");
+  if(!hn||hn.length<2){panel.className="hidden";_patientHistory=null;return}
+  // Find all records for this HN
+  const hist=records.filter(r=>r.form&&r.form.hn===hn).sort((a,b)=>{
+    // Sort by timestamp (oldest first)
+    const ta=a.ts||"";const tb=b.ts||"";return ta.localeCompare(tb);
+  });
+  if(!hist.length){panel.className="hidden";_patientHistory=null;return}
+  _patientHistory=hist;
+  const visitNum=hist.length+1;
+  const last=hist[hist.length-1];
+
+  // Auto-fill name if empty
+  if(!V("fNm")&&last.form.name)$("fNm").value=last.form.name;
+
+  let h='<div class="fu-banner">';
+  h+='<div class="fu-banner-head">';
+  h+='<div class="fu-count">🔄 พบบันทึกเดิม <b>'+hist.length+'</b> ครั้ง</div>';
+  h+='<div class="fu-badge">📸 ครั้งที่ '+visitNum+'</div>';
+  h+='</div>';
+
+  // Timeline of previous visits
+  h+='<div style="font-size:9px;font-weight:600;color:var(--dm);margin-bottom:4px">📅 ประวัติการประเมิน</div>';
+  h+='<div class="fu-timeline">';
+  hist.forEach((r,i)=>{
+    const col=gc(r.grade);
+    h+='<div class="fu-card" onclick="showFuDetail('+i+')">';
+    if(r.photo) h+='<img class="fu-card-img" src="'+r.photo+'">';
+    else h+='<div class="fu-card-img" style="display:flex;align-items:center;justify-content:center;font-size:20px">📷</div>';
+    h+='<div class="fu-card-num">ครั้งที่ '+(i+1)+'</div>';
+    h+='<div class="fu-card-grade" style="background:'+col+'15;color:'+col+'">G'+r.grade+' '+r.labelTh+'</div>';
+    h+='<div class="fu-card-time">🕐 '+r.ts+'</div>';
+    h+='</div>';
+  });
+  // Calculate scheduled time for this visit
+  const now=new Date();
+  const lastTime=_parseThaiDate(last.ts);
+  let scheduledTime=null;let scheduledLabel="";let scheduledDesc="";let isOverdue=false;let isPending=false;
+  if(lastTime&&last.followups&&last.followups.length){
+    // Find which follow-up slot this visit corresponds to
+    for(let fi=0;fi<last.followups.length;fi++){
+      const f=last.followups[fi];
+      const fTime=new Date(lastTime.getTime()+f.hr*3600000);
+      // Check if this is the next pending follow-up or overdue one
+      if(!scheduledTime||fTime<=now){
+        scheduledTime=fTime;scheduledLabel=f.label;scheduledDesc=f.desc;
+        isOverdue=fTime<=now;
+      }
+      if(fTime>now&&!isPending){scheduledTime=fTime;scheduledLabel=f.label;scheduledDesc=f.desc;isPending=true;break}
+    }
+  }
+
+  // Current card with scheduled time + countdown
+  h+='<div class="fu-card current" style="min-width:140px;max-width:160px;position:relative">';
+  if(scheduledTime){
+    const schStr=scheduledTime.toLocaleString("th-TH",{hour:"2-digit",minute:"2-digit",hour12:false});
+    const schDate=scheduledTime.toLocaleString("th-TH",{day:"2-digit",month:"2-digit"});
+    const diffMs=scheduledTime.getTime()-now.getTime();
+    const isOD=diffMs<=0;
+    h+='<div style="background:'+(isOD?"rgba(214,48,49,.1)":"rgba(0,120,90,.08)")+';border-radius:8px;padding:4px 6px;margin-bottom:4px;text-align:center">';
+    h+='<div style="font-size:8px;font-weight:700;color:'+(isOD?"var(--rd)":"var(--ac)")+'">'+(isOD?"⚠️ เลยกำหนด":"⏰ นัดประเมิน")+'</div>';
+    h+='<div style="font-size:14px;font-weight:800;font-family:monospace;color:'+(isOD?"var(--rd)":"var(--ac)")+'">'+schStr+'</div>';
+    h+='<div style="font-size:8px;color:var(--dm)">'+schDate+'</div>';
+    h+='</div>';
+  }
+  h+='<div class="fu-card-img" style="display:flex;align-items:center;justify-content:center;font-size:24px;background:rgba(0,120,90,.06);position:relative">🆕</div>';
+  h+='<div class="fu-card-num" style="color:var(--ac)">ครั้งที่ '+visitNum+'</div>';
+  h+='<div class="fu-card-grade" style="background:rgba(0,120,90,.08);color:var(--ac)">กำลังประเมิน...</div>';
+  // Live countdown
+  if(scheduledTime){
+    h+='<div id="fuCountdown" style="margin-top:4px;text-align:center;font-size:9px;font-weight:700;font-family:monospace;padding:3px 0;border-radius:6px"></div>';
+  }
+  h+='</div>';
+  h+='</div>';
+
+  // Grade trend
+  if(hist.length>=2){
+    const grades=hist.map(r=>r.grade);
+    const lastG=grades[grades.length-1];const prevG=grades[grades.length-2];
+    const trend=lastG<prevG?"better":lastG>prevG?"worse":"same";
+    const trendLabel=trend==="better"?"↗ อาการดีขึ้น (G"+prevG+"→G"+lastG+")":trend==="worse"?"↘ อาการแย่ลง (G"+prevG+"→G"+lastG+")":"→ อาการคงเดิม (G"+lastG+")";
+    h+='<div style="margin-top:6px"><span class="fu-trend '+trend+'">'+trendLabel+'</span></div>';
+  }
+
+  // Next follow-up with full detail
+  if(last.followups&&last.followups.length&&lastTime){
+    h+='<div style="margin-top:8px;background:rgba(212,160,23,.04);border:1px solid rgba(212,160,23,.15);border-radius:var(--rs);padding:8px 10px">';
+    h+='<div style="font-size:9px;font-weight:700;color:var(--yw);margin-bottom:6px">📅 ตาราง Follow-up ทั้งหมด (จากครั้งก่อน)</div>';
+    last.followups.forEach(function(f){
+      const fTime=new Date(lastTime.getTime()+f.hr*3600000);
+      const fStr=fTime.toLocaleString("th-TH",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false});
+      const done=fTime<=now;
+      h+='<div style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:10px">';
+      h+='<div style="min-width:10px;height:10px;border-radius:50%;background:'+(done?"var(--gn)":"var(--yw)")+';flex-shrink:0"></div>';
+      h+='<div style="min-width:40px;font-weight:700;color:var(--ac);font-family:monospace">'+f.label+'</div>';
+      h+='<div style="flex:1;color:var(--tx)">'+f.desc+'</div>';
+      h+='<div style="font-family:monospace;font-weight:600;color:'+(done?"var(--gn)":"var(--yw)")+'">'+fStr+(done?" ✅":"")+'</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+
+  h+='</div>';
+  panel.className="";
+  panel.innerHTML=h;
+
+  // Start live countdown if we have a scheduled time
+  if(scheduledTime){
+    if(window._fuCountdownTimer)clearInterval(window._fuCountdownTimer);
+    function updateFuCountdown(){
+      const el=document.getElementById("fuCountdown");if(!el)return;
+      const diff=scheduledTime.getTime()-Date.now();
+      if(diff<=0){
+        const overMs=Math.abs(diff);
+        const overMin=Math.floor(overMs/60000);const overHr=Math.floor(overMin/60);
+        el.style.background="rgba(214,48,49,.1)";el.style.color="var(--rd)";
+        if(overHr>0)el.textContent="⚠️ เลย "+overHr+" ชม. "+String(overMin%60).padStart(2,"0")+" น.";
+        else el.textContent="⚠️ เลยกำหนด "+overMin+" นาที";
+      }else{
+        const totalSec=Math.floor(diff/1000);
+        const hr=Math.floor(totalSec/3600);const mn=Math.floor((totalSec%3600)/60);const sc=totalSec%60;
+        el.style.background="rgba(0,120,90,.08)";el.style.color="var(--ac)";
+        if(hr>0)el.textContent="⏳ อีก "+hr+":"+String(mn).padStart(2,"0")+":"+String(sc).padStart(2,"0");
+        else el.textContent="⏳ อีก "+mn+":"+String(sc).padStart(2,"0")+" นาที";
+      }
+    }
+    updateFuCountdown();
+    window._fuCountdownTimer=setInterval(updateFuCountdown,1000);
+  }
+}
+
+function _parseThaiDate(ts){
+  // Parse "DD/MM/YYYY HH:MM:SS" Thai format
+  if(!ts)return null;
+  try{
+    const parts=ts.match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/);
+    if(parts){
+      const y=parseInt(parts[3]);const yr=y>2500?y-543:y; // Convert BE to CE if needed
+      return new Date(yr,parseInt(parts[2])-1,parseInt(parts[1]),parseInt(parts[4]),parseInt(parts[5]),parseInt(parts[6]));
+    }
+    return new Date(ts);
+  }catch(e){return null}
+}
+
+function showFuDetail(idx){
+  if(!_patientHistory||!_patientHistory[idx])return;
+  const r=_patientHistory[idx];
+  const col=gc(r.grade);
+  let h='<div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9998;display:flex;align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)this.remove()">';
+  h+='<div style="background:#fff;border-radius:var(--r);max-width:380px;width:100%;max-height:85vh;overflow-y:auto;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.3)" onclick="event.stopPropagation()">';
+  h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">';
+  h+='<div style="font-size:14px;font-weight:700;color:var(--ac)">📋 ประเมินครั้งที่ '+(idx+1)+'</div>';
+  h+='<button style="background:none;border:none;font-size:20px;cursor:pointer;padding:4px" onclick="this.closest(\'div[style*=fixed]\').remove()">✕</button>';
+  h+='</div>';
+  // Grade badge
+  h+='<div style="text-align:center;padding:16px;background:'+col+'08;border:2px solid '+col+';border-radius:var(--r);margin-bottom:12px">';
+  h+='<div style="font-size:48px;font-weight:800;font-family:monospace;color:'+col+'">'+r.grade+'</div>';
+  h+='<div style="font-size:14px;font-weight:700;color:'+col+'">'+r.labelTh+'</div>';
+  h+='<div style="font-size:10px;color:var(--dm)">'+r.scaleName+'</div></div>';
+  // Photo
+  if(r.photo)h+='<img src="'+r.photo+'" style="width:100%;border-radius:var(--rs);margin-bottom:12px">';
+  // Details
+  h+='<div style="font-size:11px">';
+  [["🕐 เวลา",r.ts],["💊 สารน้ำ/ยา",r.form.fluid],["😣 Pain",r.painScore+"/10"],["📐 Edema",r.edemaCm?r.edemaCm+"cm":"N/A"],["🔍 อาการ",(r.syms||[]).join(", ")],["👩‍⚕️ ผู้ประเมิน",r.form.assessor||"-"]].forEach(x=>{
+    h+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(0,0,0,.05)"><span style="color:var(--dm)">'+x[0]+'</span><span style="font-weight:600">'+x[1]+'</span></div>';
+  });
+  h+='</div>';
+  // Compare with next if available
+  if(_patientHistory[idx+1]){
+    const nxt=_patientHistory[idx+1];
+    const ncol=gc(nxt.grade);
+    const trend=nxt.grade<r.grade?"better":nxt.grade>r.grade?"worse":"same";
+    h+='<div style="margin-top:12px;padding:8px;background:var(--bg);border-radius:var(--rs)">';
+    h+='<div style="font-size:10px;font-weight:700;color:var(--dm);margin-bottom:6px">เปรียบเทียบกับครั้งถัดไป →</div>';
+    h+='<div class="fu-trend '+trend+'" style="margin-bottom:6px">G'+r.grade+' → G'+nxt.grade+' '+(trend==="better"?"ดีขึ้น":trend==="worse"?"แย่ลง":"คงเดิม")+'</div>';
+    if(r.photo&&nxt.photo){
+      h+='<div class="fu-compare"><div class="fu-compare-card"><img src="'+r.photo+'"><div class="fu-compare-label" style="color:'+col+'">ครั้งที่ '+(idx+1)+' (G'+r.grade+')</div></div>';
+      h+='<div class="fu-compare-card"><img src="'+nxt.photo+'"><div class="fu-compare-label" style="color:'+ncol+'">ครั้งที่ '+(idx+2)+' (G'+nxt.grade+')</div></div></div>';
+    }
+    h+='</div>';
+  }
+  h+='</div></div>';
+  document.body.insertAdjacentHTML("beforeend",h);
+}
+
+function getVisitNumber(hn){
+  if(!hn)return 1;
+  const hist=records.filter(r=>r.form&&r.form.hn===hn);
+  return hist.length+1;
+}
+
+// ══════ HOSPITAL SELECTOR ══════
+function onHospChange(){
+  const sel=V("fHosp");
+  $("fHospCustomWrap").classList.toggle("hidden",sel!=="custom");
+  // Switch wards
+  if(sel==="phyathai-sriracha"){WARDS=WARDS_PTS}else{WARDS=WARDS_GENERAL}
+  rebuildWards();
+  // Update header
+  const name=getHospName();
+  document.querySelector('.hdr small').textContent=name+' · v5.0';
+  // Show/hide PTS logo
+  const logo=document.querySelector('.hdr-logo');
+  if(logo)logo.style.display=sel==="phyathai-sriracha"?"block":"none";
+}
+function rebuildWards(){
+  const s=$("fWd");const cur=s.value;
+  s.innerHTML='<option value="">เลือก Ward</option>';
+  WARDS.forEach(a=>{const o=document.createElement("option");o.value=a;o.textContent=a;s.appendChild(o)});
+  if(cur&&WARDS.includes(cur))s.value=cur;
+}
+function getHospName(){
+  const sel=V("fHosp");
+  if(sel==="phyathai-sriracha")return"รพ.พญาไทศรีราชา";
+  if(sel==="custom")return V("fHospCustom")||"โรงพยาบาล";
+  return"โรงพยาบาล";
+}
+
+// ══════ INIT ══════
+function init(){
+  [["fWd",WARDS],["fSt",SITES],["fGg",GAUGES]].forEach(([id,arr])=>{const s=$(id);arr.forEach(a=>{const o=document.createElement("option");o.value=a;o.textContent=a;s.appendChild(o)})});
+  $("fIn").valueAsDate=new Date();
+  buildProg();buildFaces();buildSyms("gSkin",SKIN);buildSyms("gVasc",VASC);buildSyms("gSev",SEV);
+  tick();setInterval(tick,1000);updCnt();
+  // Restore backend URL
+  if(BACKEND_URL)$("backendUrl").value=BACKEND_URL;
+  updateCloudBadge();
+  // Restore hospital selection
+  const savedHosp=localStorage.getItem("ivcb_hosp");
+  if(savedHosp){$("fHosp").value=savedHosp;onHospChange()}
+  const savedHospCustom=localStorage.getItem("ivcb_hosp_custom");
+  if(savedHospCustom)$("fHospCustom").value=savedHospCustom;
+}
+function tick(){const t=new Date().toLocaleString("th-TH",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false});$("clock").textContent=t;$("ts1").textContent=t}
+function buildProg(){const p=$("prog");p.innerHTML="";for(let i=1;i<=4;i++){const d=document.createElement("div");d.className="pdot"+(i<step?" done":"")+(i===step?" now":"");p.appendChild(d)}}
+
+// ══════ NAV ══════
+function goTab(t){
+  $("tabN").classList.toggle("on",t==="n");$("tabL").classList.toggle("on",t==="l"||t==="d");$("tabR").classList.toggle("on",t==="r");$("tabC").classList.toggle("on",t==="c");
+  $("vN").classList.toggle("hidden",t!=="n");$("vL").classList.toggle("hidden",t!=="l");$("vD").classList.toggle("hidden",t!=="d");$("vR").classList.toggle("hidden",t!=="r");$("vC").classList.toggle("hidden",t!=="c");
+  $("bot").style.display=t==="n"?"flex":"none";
+  if(t==="l")renderRecs();window.scrollTo(0,0);
+}
+function showStep(n){step=n;buildProg();document.querySelectorAll("#vN .scr").forEach(s=>{s.classList.toggle("on",+s.dataset.s===n)});$("bB").style.display=n>1?"flex":"none";$("bN").textContent=n===3?"🔍 วิเคราะห์ Grade":n===4?"💾 บันทึก + แชร์":"ถัดไป →";if(n===3&&ovalData)showOvalMeasure();window.scrollTo(0,0)}
+function doNext(){if(step===1){if(!V("fHN")||!V("fNm")){toast('กรุณากรอก HN และชื่อผู้ป่วย','warning');return}showStep(2)}else if(step===2){if(!photoData){toast('กรุณาถ่ายรูปก่อน','warning');return}showStep(3)}else if(step===3){if(painScore<0){toast('กรุณาเลือกระดับความเจ็บปวด','warning');return}calcGrade();showStep(4)}else if(step===4){saveRec()}}
+function prev(){if(step>1)showStep(step-1)}
+
+// ══════ PHOTO + FREEHAND DRAWING ══════
+function onPhoto(inp){
+  const f=inp.files[0];if(!f)return;
+  const rd=new FileReader();rd.onload=function(e){
+    const img=new Image();img.onload=function(){
+      const c=document.createElement("canvas"),ctx=c.getContext("2d");
+      const sc=Math.min(1200/img.width,1);c.width=img.width*sc;c.height=img.height*sc;
+      ctx.drawImage(img,0,0,c.width,c.height);
+      const bh=44;ctx.fillStyle="rgba(0,0,0,.65)";ctx.fillRect(0,c.height-bh,c.width,bh);
+      ctx.fillStyle="#00e8b5";ctx.font="bold 14px sans-serif";
+      ctx.fillText("IV Care Buddy | "+new Date().toLocaleString("th-TH",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}),8,c.height-bh+18);
+      ctx.fillStyle="#fff";ctx.font="12px sans-serif";
+      ctx.fillText("HN: "+(V("fHN")||"N/A")+" | "+(V("fNm")||"N/A"),8,c.height-bh+36);
+      photoData=c.toDataURL("image/jpeg",.82);
+      renderOvalUI();
+    };img.src=e.target.result;
+  };rd.readAsDataURL(f);
+}
+function renderOvalUI(){
+  ovalData=null;window._contourPts=null;window._freehandPts=null;ovalConfirmed=false;
+  $("phBox").innerHTML='<div style="display:flex"><div class="ph-wrap" id="phW" style="flex:1;position:relative;border-radius:var(--r);overflow:hidden;background:#000"><img id="phI" src="'+photoData+'" style="width:100%;display:block"><canvas id="phC" style="position:absolute;top:0;left:0;width:100%;height:100%;touch-action:none"></canvas></div><div style="min-width:36px;display:flex;align-items:center;justify-content:center;color:var(--dm);font-size:9px;writing-mode:vertical-rl;opacity:.4;user-select:none">⬇ เลื่อนลง</div></div>';
+  $("markUI").classList.remove("hidden");$("scrollHandle").classList.remove("hidden");$("liveMeasure").classList.add("hidden");
+  const btn=$("btnConfirmOval");if(btn){btn.textContent="✅ ยืนยันวง";btn.style.background="";btn.style.borderColor="";btn.style.color=""}
+  const img=$("phI"),cvs=$("phC");
+  function sz(){cvs.width=img.clientWidth;cvs.height=img.clientHeight;window._phDisplayW=img.clientWidth;window._phDisplayH=img.clientHeight}
+  img.onload=function(){sz()};if(img.complete){sz()}
+  let drawing=false,fhPts=[];
+  cvs.ontouchstart=cvs.onmousedown=function(e){e.preventDefault();drawing=true;fhPts=[];const p=gp(e,cvs);fhPts.push(p)};
+  cvs.ontouchmove=cvs.onmousemove=function(e){if(!drawing)return;e.preventDefault();const p=gp(e,cvs);fhPts.push(p);drawFreehand(fhPts,true)};
+  cvs.ontouchend=cvs.onmouseup=function(){if(!drawing)return;drawing=false;if(fhPts.length>5){window._freehandPts=fhPts;const xs=fhPts.map(p=>p.x),ys=fhPts.map(p=>p.y);const mnX=Math.min(...xs),mxX=Math.max(...xs),mnY=Math.min(...ys),mxY=Math.max(...ys);ovalData={x:mnX,y:mnY,w:mxX-mnX,h:mxY-mnY};showOvalMeasure();drawFreehand(fhPts,false)}};
+}
+function drawFreehand(pts,isDrawing){
+  const cvs=$("phC");if(!cvs||!pts||pts.length<2)return;
+  const ctx=cvs.getContext("2d");ctx.clearRect(0,0,cvs.width,cvs.height);
+
+  if(isDrawing){
+    // While drawing: show bright pencil line following finger
+    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
+    for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i].x,pts[i].y);
+    // Glow effect
+    ctx.strokeStyle="rgba(0,232,181,.35)";ctx.lineWidth=12;ctx.lineCap="round";ctx.lineJoin="round";ctx.stroke();
+    // Main line
+    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
+    for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i].x,pts[i].y);
+    ctx.strokeStyle="#00e8b5";ctx.lineWidth=3;ctx.lineCap="round";ctx.lineJoin="round";ctx.stroke();
+    // Dot at current position
+    const last=pts[pts.length-1];
+    ctx.beginPath();ctx.arc(last.x,last.y,6,0,Math.PI*2);ctx.fillStyle="rgba(0,232,181,.5)";ctx.fill();
+    ctx.beginPath();ctx.arc(last.x,last.y,3,0,Math.PI*2);ctx.fillStyle="#00e8b5";ctx.fill();
+    // Live measurement while drawing
+    if(pts.length>10){
+      const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y);
+      const bw=Math.max(...xs)-Math.min(...xs),bh=Math.max(...ys)-Math.min(...ys);
+      const scale=parseFloat(V("fScale"))||5;
+      const wmm=(bw/scale).toFixed(0),hmm=(bh/scale).toFixed(0);
+      const txt=wmm+"×"+hmm+" mm";
+      ctx.font="bold 11px 'Kanit',sans-serif";const tw=ctx.measureText(txt).width;
+      const cx=(Math.min(...xs)+Math.max(...xs))/2;
+      ctx.fillStyle="rgba(0,0,0,.7)";ctx.fillRect(cx-tw/2-6,Math.min(...ys)-22,tw+12,20);
+      ctx.fillStyle="#00e8b5";ctx.fillText(txt,cx-tw/2,Math.min(...ys)-8);
+    }
+  }else{
+    // Finished drawing: show filled region + measurement
+    ctx.fillStyle="rgba(0,0,0,.15)";ctx.fillRect(0,0,cvs.width,cvs.height);
+    ctx.save();ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i].x,pts[i].y);ctx.closePath();ctx.clip();ctx.clearRect(0,0,cvs.width,cvs.height);ctx.restore();
+    // Outer glow
+    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i].x,pts[i].y);ctx.closePath();ctx.strokeStyle="rgba(255,56,96,.15)";ctx.lineWidth=12;ctx.stroke();
+    // Main line
+    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i].x,pts[i].y);ctx.closePath();
+    ctx.strokeStyle="#ff3860";ctx.lineWidth=3;ctx.setLineDash([6,3]);ctx.stroke();ctx.setLineDash([]);
+    // Size label
+    if(ovalData){
+      const scale=parseFloat(V("fScale"))||5;
+      const wmm=(ovalData.w/scale).toFixed(0),hmm=(ovalData.h/scale).toFixed(0);
+      const maxD=Math.max(parseFloat(wmm),parseFloat(hmm));
+      const txt=wmm+"×"+hmm+" mm (⌀"+maxD+"mm)";
+      ctx.font="bold 12px 'Kanit',sans-serif";const tw=ctx.measureText(txt).width;
+      ctx.fillStyle="#ff3860";ctx.fillRect(ovalData.x+ovalData.w/2-tw/2-6,ovalData.y-20,tw+12,20);
+      ctx.fillStyle="#fff";ctx.fillText(txt,ovalData.x+ovalData.w/2-tw/2,ovalData.y-6);
+    }
+  }
+}
+let ovalConfirmed=false;
+function confirmOval(){if(!ovalData){toast('ยังไม่ได้วงบริเวณผิดปกติ — ลากนิ้วบนภาพก่อน','warning');return}ovalConfirmed=true;$("btnConfirmOval").textContent="✅ บันทึกแล้ว!";$("btnConfirmOval").style.background="var(--gn)";$("btnConfirmOval").style.borderColor="var(--gn)";$("btnConfirmOval").style.color="#fff";showOvalMeasure();toast('บันทึกวงเรียบร้อย','success')}
+// ══════ MANUAL LESION MARKING (freehand draw + measure) ══════
+function gp(e,cvs){const r=cvs.getBoundingClientRect(),t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top}}
+function convexHull(pts){if(pts.length<3)return pts;pts.sort((a,b)=>a.x-b.x||a.y-b.y);const cross=(o,a,b)=>(a.x-o.x)*(b.y-o.y)-(a.y-o.y)*(b.x-o.x);const lower=[];for(const p of pts){while(lower.length>=2&&cross(lower[lower.length-2],lower[lower.length-1],p)<=0)lower.pop();lower.push(p)}const upper=[];for(let i=pts.length-1;i>=0;i--){const p=pts[i];while(upper.length>=2&&cross(upper[upper.length-2],upper[upper.length-1],p)<=0)upper.pop();upper.push(p)}lower.pop();upper.pop();return lower.concat(upper)}
+function smoothPath(ctx,pts,tension=0.3){if(pts.length<3){pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));return}ctx.moveTo(pts[0].x,pts[0].y);for(let i=0;i<pts.length;i++){const p0=pts[(i-1+pts.length)%pts.length],p1=pts[i],p2=pts[(i+1)%pts.length],p3=pts[(i+2)%pts.length];ctx.bezierCurveTo(p1.x+(p2.x-p0.x)*tension,p1.y+(p2.y-p0.y)*tension,p2.x-(p3.x-p1.x)*tension,p2.y-(p3.y-p1.y)*tension,p2.x,p2.y)}ctx.closePath()}
+function drawOval(){
+  const cvs=$("phC");if(!cvs||!ovalData)return;const ctx=cvs.getContext("2d");ctx.clearRect(0,0,cvs.width,cvs.height);
+  const{x,y,w,h}=ovalData;const col="#ff3860";const pts=window._contourPts;
+  ctx.fillStyle="rgba(0,0,0,.2)";ctx.fillRect(0,0,cvs.width,cvs.height);
+  if(pts&&pts.length>5){const hull=convexHull(pts);ctx.save();ctx.beginPath();smoothPath(ctx,hull,0.4);ctx.clip();ctx.clearRect(0,0,cvs.width,cvs.height);ctx.restore();ctx.beginPath();smoothPath(ctx,hull,0.4);ctx.strokeStyle=col;ctx.lineWidth=3;ctx.setLineDash([8,4]);ctx.stroke();ctx.setLineDash([]);ctx.beginPath();smoothPath(ctx,hull,0.4);ctx.strokeStyle=col+"66";ctx.lineWidth=8;ctx.stroke()}
+  else{ctx.save();ctx.beginPath();ctx.ellipse(x+w/2,y+h/2,w/2,h/2,0,0,Math.PI*2);ctx.clip();ctx.clearRect(0,0,cvs.width,cvs.height);ctx.restore();ctx.beginPath();ctx.ellipse(x+w/2,y+h/2,w/2,h/2,0,0,Math.PI*2);ctx.strokeStyle=col;ctx.lineWidth=3;ctx.setLineDash([8,4]);ctx.stroke();ctx.setLineDash([])}
+  const scale=parseFloat(V("fScale"))||5;const wmm=(w/scale).toFixed(0),hmm=(h/scale).toFixed(0);
+  const maxD=Math.max(parseFloat(wmm),parseFloat(hmm));
+  const txt=wmm+"×"+hmm+" mm (⌀"+maxD+"mm)";
+  ctx.font="bold 12px 'Kanit',sans-serif";const tw=ctx.measureText(txt).width;
+  ctx.fillStyle=col;ctx.fillRect(x+w/2-tw/2-6,y-22,tw+12,22);
+  ctx.fillStyle="#fff";ctx.fillText(txt,x+w/2-tw/2,y-7);
+}
+function showOvalMeasure(){
+  if(!ovalData){$("ovalMeasure").textContent="-- ยังไม่ได้วงบนภาพ --";$("liveMeasure").classList.add("hidden");return}
+  const scale=parseFloat(V("fScale"))||5;
+  const wmm=(ovalData.w/scale).toFixed(0),hmm=(ovalData.h/scale).toFixed(0);
+  const maxD=Math.max(parseFloat(wmm),parseFloat(hmm));
+  const wcm=(ovalData.w/scale/10).toFixed(1),hcm=(ovalData.h/scale/10).toFixed(1);
+  // Main measure display
+  let html="📐 <b>"+wmm+" × "+hmm+" mm</b> (⌀"+maxD+"mm)";
+  $("ovalMeasure").innerHTML=html;
+  // Big live measure card
+  $("liveMeasure").classList.remove("hidden");
+  $("liveMeasureVal").textContent=wmm+" × "+hmm+" mm";
+  $("liveMeasureDetail").textContent="⌀ "+maxD+"mm | "+wcm+" × "+hcm+" cm";
+  // Auto-fill edema field (in cm)
+  $("fEd").value=Math.max(parseFloat(wcm),parseFloat(hcm));
+}
+function clearOval(){ovalData=null;ovalConfirmed=false;window._freehandPts=null;window._contourPts=null;const c=$("phC");if(c)c.getContext("2d").clearRect(0,0,c.width,c.height);$("ovalMeasure").textContent="-- ยังไม่ได้วง --";const ab=$("autoDetBox");if(ab)ab.innerHTML='<div class="al y" style="font-size:12px"><b>👆 ลากนิ้ววาดรอบบริเวณผิดปกติ</b> เพื่อวัดขนาด Lesion</div>';const btn=$("btnConfirmOval");if(btn){btn.textContent="✅ ยืนยันวง";btn.style.background="";btn.style.borderColor="";btn.style.color=""}}
+function retake(){photoData=null;ovalData=null;$("phBox").innerHTML='<div style="display:flex;gap:10px;justify-content:center"><div class="ph-empty" onclick="$(\'camIn\').click()" style="flex:1;padding:24px 10px"><div style="font-size:38px">📷</div><div style="font-size:12px;font-weight:600;margin-top:6px">ถ่ายรูป</div></div><div class="ph-empty" onclick="$(\'galIn\').click()" style="flex:1;padding:24px 10px"><div style="font-size:38px">🖼️</div><div style="font-size:12px;font-weight:600;margin-top:6px">เลือกจากคลัง</div></div></div>';$("markUI").classList.add("hidden");$("camIn").value="";$("galIn").value=""}
+
+// ══════ FACES ══════
+function buildFaces(){const r=$("faceR");FACES.forEach(f=>{const d=document.createElement("div");d.className="face";d.innerHTML='<span class="face-e">'+f.e+'</span><span class="face-n">'+f.n+'</span>';d.onclick=()=>selPain(f.n);r.appendChild(d)})}
+function selPain(n){painScore=n;document.querySelectorAll(".face").forEach((f,i)=>f.classList.toggle("on",i===n));const a=$("painAl");a.classList.remove("hidden");if(n>=7){a.className="al r";a.innerHTML="🚨 <b>Pain ≥7 = Severe</b> — แจ้งแพทย์ทันที"}else if(n>=4){a.className="al y";a.innerHTML="⚠️ <b>Pain 4-6 = Moderate</b> — พิจารณาให้ยา / แจ้งแพทย์"}else{a.className="al g";a.innerHTML="✅ Pain 0-3 = Mild — สังเกตต่อ"}}
+
+// ══════ SYMPTOMS ══════
+function buildSyms(cid,arr){
+  const c=$(cid);c.className="sym-grid";
+  // Add "ปกติ" (Normal) option first — spans full width
+  const norm=document.createElement("div");
+  norm.className="sym on";norm.dataset.id="normal_"+cid;norm.dataset.normal="1";
+  norm.style.gridColumn="1 / -1";
+  norm.innerHTML='<div class="sym-c">✓</div><div><div class="sym-t">✅ ปกติ (Normal)</div></div>';
+  norm.onclick=function(){
+    // Select normal → deselect all others in this group
+    c.querySelectorAll('.sym:not([data-normal])').forEach(s=>s.classList.remove("on"));
+    norm.classList.add("on");
+  };
+  c.appendChild(norm);
+  // Add symptom items
+  arr.forEach(s=>{
+    const d=document.createElement("div");d.className="sym";d.dataset.id=s.id;
+    d.innerHTML='<div class="sym-c">✓</div><div><div class="sym-t">'+s.ic+" "+s.th+'</div></div>';
+    d.onclick=function(){
+      d.classList.toggle("on");
+      // If any symptom selected → deselect normal
+      const anyOn=c.querySelector('.sym.on:not([data-normal])');
+      if(anyOn){norm.classList.remove("on");}
+      else{norm.classList.add("on");}
+    };
+    c.appendChild(d);
+  });
+}
+function getSyms(){return[...document.querySelectorAll(".sym.on")].map(s=>s.dataset.id)}
+
+// ══════ CAP REFILL ══════
+function capSetNormal(){capSec=1.5;capState="done";$("capR").innerHTML='<div class="al g" style="margin:0">✅ ปกติ — Capillary Refill < 2 วินาที</div>';$("capTimerArea").style.display="none";["capNorm","capAbn","capManual"].forEach(id=>$(id).classList.remove("ac"));$("capNorm").classList.add("ac")}
+function capSetAbnormal(){capSec=3;capState="done";$("capR").innerHTML='<div class="al r" style="margin:0">🚨 ช้ากว่าปกติ (>2s) — แจ้งแพทย์ ประเมิน circulation</div>';$("capTimerArea").style.display="none";["capNorm","capAbn","capManual"].forEach(id=>$(id).classList.remove("ac"));$("capAbn").classList.add("ac")}
+function capSetManualMode(){capSec=null;capState="idle";$("capR").innerHTML="";$("capTimerArea").style.display="block";$("capC").className="timer-c";$("capT").textContent="0.0";["capNorm","capAbn","capManual"].forEach(id=>$(id).classList.remove("ac"));$("capManual").classList.add("ac")}
+function tapCap(){const c=$("capC"),t=$("capT"),h=$("capH"),r=$("capR");if(capState==="idle"){capState="running";capStart=Date.now();c.className="timer-c run";h.textContent="แตะเมื่อสีกลับ";capInt=setInterval(()=>{t.textContent=((Date.now()-capStart)/1000).toFixed(1)},100)}else if(capState==="running"){clearInterval(capInt);capSec=(Date.now()-capStart)/1000;t.textContent=capSec.toFixed(1);capState="done";c.className=capSec>2?"timer-c bad":"timer-c ok";r.innerHTML=capSec>2?'<div class="al r" style="margin:0">🚨 '+capSec.toFixed(1)+'s >2s แจ้งแพทย์ทันที</div>':'<div class="al g" style="margin:0">✅ '+capSec.toFixed(1)+'s ปกติ</div>';h.textContent="แตะรีเซ็ต"}else{capState="idle";capSec=null;c.className="timer-c";t.textContent="0.0";r.innerHTML="";h.textContent="แตะเพื่อเริ่ม"}}
+// ══════ GRADING ALGORITHM (identical to v4) ══════
+function gc(g){return g>=4?"#ff3860":g===3?"#ff9f43":g===2?"#feca57":"#10ac84"}
+
+function calcGrade(){
+  const syms=getSyms(),has=id=>syms.includes(id);
+  const edemaCm=parseFloat(V("fEd"))||0,edemaIn=edemaCm/2.54;
+  let grade=0,labelTh="",action="",scaleName="";
+  const alerts=[];
+  const drugV=V("fFl").toLowerCase();
+  const drugMatch=HIGH_ALERT_DRUGS.find(d=>d.name.toLowerCase().includes(drugV)||d.alias.some(a=>a.toLowerCase().includes(drugV)));
+  if(drugMatch&&drugMatch.level==="RED")alerts.push("🚨 HIGH ALERT: "+drugMatch.name+" ("+drugMatch.cat+") — Antidote: "+drugMatch.antidote);
+  if(painScore>=7)alerts.push("🚨 Pain "+painScore+"/10 Severe — แจ้งแพทย์");
+  if(capSec!==null&&capSec>2)alerts.push("🚨 Cap Refill "+capSec.toFixed(1)+"s >2s — Vascular compromise");
+  if(has("blister"))alerts.push("🫧 ตุ่มน้ำ — ห้ามเจาะ — แจ้งแพทย์");
+  if(has("necrosis"))alerts.push("⬛ เนื้อตาย — Plastic consult");
+  if(has("pyrexia"))alerts.push("🤒 ไข้ — Blood C/S");
+  if(has("purulent"))alerts.push("🟡 หนอง — Culture + ATB");
+  const isPhle=has("erythema")&&(has("streak")||has("venous_cord")||has("warmth"));
+  if(isPhle&&!has("blanched")&&!has("cool")&&!has("leaking")){
+    scaleName="VIP Score (Phlebitis)";
+    const ct=["erythema","swelling","induration","streak","venous_cord","warmth","pyrexia"].filter(has).length;
+    if(has("pyrexia")||(has("venous_cord")&&ct>=3)){grade=5;labelTh="Advanced Thrombophlebitis";action="🚨 หยุด IV+แจ้งแพทย์+Blood C/S"}
+    else if(has("venous_cord")){grade=4;labelTh="เริ่ม Thrombophlebitis";action="🚨 Resite+แจ้งแพทย์"}
+    else if(has("streak")||(ct>=3)){grade=3;labelTh="Phlebitis ปานกลาง";action="🔴 Resite+รักษา+แจ้งแพทย์"}
+    else if(ct>=2){grade=2;labelTh="Phlebitis เริ่มต้น";action="⚠️ Resite"}
+    else{grade=1;labelTh="อาจเริ่มมี Phlebitis";action="สังเกต 1-2 ชม."}
+  }else{
+    scaleName="INS Infiltration Scale";
+    if(has("vesicant")||(drugMatch&&drugMatch.level==="RED"&&syms.length>0)){grade=4;labelTh="Vesicant — รุนแรงสูงสุด";action="🚨 หยุด IV+Aspirate+Antidote+แจ้งแพทย์ทันที"}
+    else if(has("necrosis")||has("ulcer")){grade=4;labelTh="Tissue Damage";action="🚨 Consult Plastic Surgery"}
+    else if(edemaIn>6||has("translucent")||has("numbness")||has("blister")){grade=3;labelTh="Infiltration ปานกลาง-รุนแรง";action="🔴 หยุด IV+แจ้งแพทย์+ยกแขนสูง"}
+    else if(edemaIn>=1||(has("blanched")&&has("swelling"))){grade=2;labelTh="Infiltration ปานกลาง";action="⚠️ หยุด IV+ย้าย+ประคบเย็น"}
+    else if(has("blanched")||has("cool")||has("swelling")){grade=1;labelTh="Infiltration เล็กน้อย";action="สังเกต+พิจารณาย้าย"}
+    else if(syms.length>0){grade=syms.length>=4?3:syms.length>=2?2:1;labelTh=grade>=3?"อาการหลายอย่าง":"อาการ"+["","เล็กน้อย","ปานกลาง"][grade];action=grade>=3?"🔴 แจ้งแพทย์":grade===2?"⚠️ Resite":"สังเกตต่อ";scaleName="General"}
+    else{labelTh="ไม่พบความผิดปกติ";action="สังเกตต่อ";scaleName="General"}
+  }
+
+  // Management Plan
+  let mgmt=[];
+  if(grade>=3){mgmt.push("🛑 หยุดให้ยา/สารน้ำทันที");mgmt.push("💉 ยังไม่ดึงเข็ม — ใช้ syringe ดูดยาออก → แล้วดึงเข็ม");mgmt.push("🚫 ห้ามกดคลึงบริเวณที่รั่วซึม");mgmt.push("📞 รายงานแพทย์เจ้าของไข้ทันที")}
+  if(grade>=2)mgmt.push("🔄 เปลี่ยนตำแหน่ง IV ใหม่");
+  if(drugMatch&&drugMatch.antidote&&drugMatch.antidote!=="-")mgmt.push("🧪 Antidote: "+drugMatch.antidote);
+  if(drugMatch&&drugMatch.compress){const ct=drugMatch.compress==="warm"?"🔴 ประคบอุ่น 15 นาที วันละ 4 ครั้ง 1-2 วัน (⚠️ ห้ามประคบเย็นในยากลุ่มนี้)":drugMatch.compress==="cold"?"🔵 ประคบเย็น 15 นาที วันละ 4 ครั้ง 1-2 วัน":"🟡 ประคบร้อนหรือเย็นตามอาการ 15 นาที วันละ 4 ครั้ง";mgmt.push(ct)}else if(grade>=1){mgmt.push("🔵 ประคบเย็นเบื้องต้น 15 นาที วันละ 4 ครั้ง 1-2 วัน")}
+  if(grade>=2)mgmt.push("⬆️ ยกแขน/บริเวณให้สูงกว่าหัวใจ 48 ชม.");
+  if(grade>=3){mgmt.push("📝 รายงานอุบัติการณ์ + รายงานหัวหน้าหน่วย");mgmt.push("📋 บันทึกในเวชระเบียนอย่างละเอียด")}
+  if(has("blister"))mgmt.push("⚠️ ตุ่มน้ำ — ห้ามเจาะ ห้ามประคบร้อน");
+  if(has("necrosis"))mgmt.push("⚠️ เนื้อตาย — ปรึกษา Plastic Surgery");
+  mgmt.push("👁️ สังเกตอาการ: ปวด บวม แดง เปลี่ยนสี เป็นระยะ");
+  mgmt.push("📸 ถ่ายรูปติดตาม — ดูกำหนดถ่ายด้านล่าง");
+
+  // Follow-up
+  const now=new Date();const followups=[];
+  if(grade>=3){followups.push({hr:1,label:"1 ชม.",desc:"ประเมินซ้ำครั้งแรก"});followups.push({hr:4,label:"4 ชม.",desc:"ตรวจ circulation, cap refill"});followups.push({hr:8,label:"8 ชม.",desc:"ประเมินเปลี่ยนเวร"});followups.push({hr:24,label:"24 ชม.",desc:"ถ่ายรูปเปรียบเทียบ"});followups.push({hr:48,label:"48 ชม.",desc:"ประเมินขั้นสุดท้าย"});followups.push({hr:72,label:"72 ชม.",desc:"ถ้ายังไม่ดีขึ้น ปรึกษาแพทย์"})}
+  else if(grade===2){followups.push({hr:2,label:"2 ชม.",desc:"ประเมินซ้ำ"});followups.push({hr:8,label:"8 ชม.",desc:"เปลี่ยนเวร"});followups.push({hr:24,label:"24 ชม.",desc:"ถ่ายรูปเปรียบเทียบ"});followups.push({hr:48,label:"48 ชม.",desc:"ประเมินขั้นสุดท้าย"})}
+  else{followups.push({hr:4,label:"4 ชม.",desc:"ประเมินซ้ำ"});followups.push({hr:24,label:"24 ชม.",desc:"ถ่ายรูปเปรียบเทียบ (ถ้ายังมีอาการ)"})}
+
+  const ts=new Date().toLocaleString("th-TH",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false});
+
+  // Summary image
+  let summaryImg=null;
+  if(photoData){
+    const cvs=$("sumCvs"),ctx=cvs.getContext("2d"),img=new Image();img.src=photoData;
+    const iw=img.naturalWidth||800,ih=img.naturalHeight||600;const W=900;const phH=Math.round(ih*(W/iw));
+    const mH=mgmt.length*34+56,fH=followups.length*24+44;
+    cvs.width=W;cvs.height=110+phH+mH+fH+40;
+    ctx.fillStyle="#071520";ctx.fillRect(0,0,W,cvs.height);let y=0;
+    ctx.fillStyle=gc(grade)+"22";ctx.fillRect(0,0,W,104);
+    ctx.fillStyle=gc(grade);ctx.font="bold 56px sans-serif";ctx.fillText("Grade "+grade,20,52);
+    ctx.fillStyle="#fff";ctx.font="bold 24px sans-serif";ctx.fillText(labelTh,20,82);
+    ctx.fillStyle="#00e8b5";ctx.font="bold 16px sans-serif";ctx.fillText(scaleName,W-ctx.measureText(scaleName).width-20,40);
+    ctx.fillStyle="#ccc";ctx.font="bold 16px sans-serif";ctx.fillText("HN:"+V("fHN")+" | "+V("fNm")+" | "+V("fWd")+" | Pain:"+painScore+"/10 | "+ts,20,100);
+    ctx.fillStyle=gc(grade);ctx.fillRect(0,104,W,4);y=108;
+    ctx.drawImage(img,0,y,W,phH);
+    if(ovalData){
+      const dispW=window._phDisplayW||iw,dispH=window._phDisplayH||ih;const sx=W/dispW,sy=phH/dispH;
+      const fhPts=window._freehandPts;
+      if(fhPts&&fhPts.length>5){ctx.fillStyle="rgba(0,0,0,.15)";ctx.fillRect(0,y,W,phH);const rPts=fhPts.map(p=>({x:p.x*sx,y:p.y*sy+y}));ctx.save();ctx.beginPath();ctx.moveTo(rPts[0].x,rPts[0].y);for(let i=1;i<rPts.length;i++)ctx.lineTo(rPts[i].x,rPts[i].y);ctx.closePath();ctx.clip();ctx.drawImage(img,0,y,W,phH);ctx.restore();ctx.beginPath();ctx.moveTo(rPts[0].x,rPts[0].y);for(let i=1;i<rPts.length;i++)ctx.lineTo(rPts[i].x,rPts[i].y);ctx.closePath();ctx.strokeStyle="#ff3860";ctx.lineWidth=4;ctx.setLineDash([8,4]);ctx.stroke();ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(rPts[0].x,rPts[0].y);for(let i=1;i<rPts.length;i++)ctx.lineTo(rPts[i].x,rPts[i].y);ctx.closePath();ctx.strokeStyle="rgba(255,56,96,.2)";ctx.lineWidth=10;ctx.stroke()}
+      else{ctx.fillStyle="rgba(0,0,0,.15)";ctx.fillRect(0,y,W,phH);ctx.save();ctx.beginPath();ctx.ellipse((ovalData.x+ovalData.w/2)*sx,y+(ovalData.y+ovalData.h/2)*sy,(ovalData.w/2)*sx,(ovalData.h/2)*sy,0,0,Math.PI*2);ctx.clip();ctx.drawImage(img,0,y,W,phH);ctx.restore();ctx.beginPath();ctx.ellipse((ovalData.x+ovalData.w/2)*sx,y+(ovalData.y+ovalData.h/2)*sy,(ovalData.w/2)*sx,(ovalData.h/2)*sy,0,0,Math.PI*2);ctx.strokeStyle="#ff3860";ctx.lineWidth=4;ctx.setLineDash([8,4]);ctx.stroke();ctx.setLineDash([])}
+      const scale=parseFloat(V("fScale"))||5;const owMM=(ovalData.w/scale).toFixed(0),ohMM=(ovalData.h/scale).toFixed(0);const maxDmm=Math.max(parseFloat(owMM),parseFloat(ohMM));const cx=(ovalData.x+ovalData.w/2)*sx,cy=y+(ovalData.y)*sy-6;ctx.font="bold 24px sans-serif";const lt=owMM+" x "+ohMM+" mm (⌀"+maxDmm+"mm)";const ltw=ctx.measureText(lt).width;ctx.fillStyle="#ff3860";ctx.fillRect(cx-ltw/2-8,cy-26,ltw+16,32);ctx.fillStyle="#fff";ctx.fillText(lt,cx-ltw/2,cy);
+    }
+    y+=phH;
+    const mLineH=34,mH2=mgmt.length*mLineH+56;ctx.fillStyle="#0a1e2e";ctx.fillRect(0,y,W,mH2);y+=10;ctx.fillStyle="#00e8b5";ctx.font="bold 24px sans-serif";ctx.fillText("Management Plan",20,y+22);y+=40;ctx.font="bold 20px sans-serif";
+    mgmt.forEach((m,i)=>{const isU=m.includes("หยุด")||m.includes("แพทย์")||m.includes("ห้าม");ctx.fillStyle=isU?"#ff6b6b":"#dfe8f2";const clean=m.replace(/[🛑💉🚫📞🔄🧪🔴🔵🟡⬆️📝📋⚠️👁️📸🩹]/g,"").trim();ctx.fillText((i+1)+". "+clean.substring(0,50),28,y+20);y+=mLineH});y+=6;
+    ctx.fillStyle="#0c2236";ctx.fillRect(0,y,W,fH);y+=8;ctx.fillStyle="#feca57";ctx.font="bold 18px sans-serif";ctx.fillText("Follow-up Schedule",20,y+16);y+=30;ctx.font="15px sans-serif";
+    followups.forEach(f=>{const ft=new Date(now.getTime()+f.hr*3600000).toLocaleString("th-TH",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false});ctx.fillStyle="#00e8b5";ctx.fillText(f.label,24,y+14);ctx.fillStyle="#ccc";ctx.fillText(f.desc+" ("+ft+")",100,y+14);y+=22});y+=10;
+    ctx.fillStyle="#0a1e2e";ctx.fillRect(0,y,W,32);ctx.fillStyle="#506a85";ctx.font="13px sans-serif";ctx.fillText("IV Care Buddy v5.0 | "+V("fFl")+" | "+(V("fAs")||"-")+" | "+ts,20,y+20);
+    summaryImg=cvs.toDataURL("image/jpeg",.92);
+  }
+
+  // Report texts
+  const briefReport="🚨 IV Complication Report\n👤 "+V("fNm")+" HN:"+V("fHN")+"\n🏥 "+V("fWd")+" | "+V("fSt")+" | "+V("fFl")+"\n📊 Grade "+grade+" "+labelTh+" ("+scaleName+")\n😣 Pain:"+painScore+"/10"+(capSec?" | Cap:"+capSec.toFixed(1)+"s":"")+"\n⚡ "+action+"\n🕐 "+ts+" | 👩‍⚕️ "+(V("fAs")||"-");
+  let fullReport="🏥 IV Care Buddy — Full Report\n━━━━━━━━━━━━━━━\n🕐 "+ts+"\n👤 HN:"+V("fHN")+" | "+V("fNm")+"\n🏥 "+V("fWd")+(V("fBd")?" Bed:"+V("fBd"):"")+"\n📍 "+V("fSt")+" | "+V("fFl")+(drugMatch?" ⚠️"+drugMatch.name:"")+" | "+V("fGg")+"\n━━━━━━━━━━━━━━━\n📊 "+scaleName+"\n🔴 Grade "+grade+" — "+labelTh+"\n😣 Pain:"+painScore+"/10\n⏱ Cap:"+(capSec?capSec.toFixed(1)+"s":"N/A")+"\n📐 Edema:"+(edemaCm||"N/A")+"cm\n📝 อาการ: "+syms.join(", ");
+  if(mgmt.length){fullReport+="\n━━━━━━━━━━━━━━━\n📋 MANAGEMENT:";mgmt.forEach(m=>{fullReport+="\n"+m})}
+  fullReport+="\n━━━━━━━━━━━━━━━\n👩‍⚕️ "+(V("fAs")||"-")+" | ว."+(V("fLc")||"-");
+
+  // Build HTML
+  const col=gc(grade);
+  let h='<div class="gbox" style="background:'+col+'12;border:2px solid '+col+'"><div class="gnum" style="color:'+col+'">'+grade+'</div><div class="glbl" style="color:'+col+'">'+labelTh+'</div><div class="gscl">'+scaleName+'</div><div class="gact">'+action+'</div></div>';
+  alerts.forEach(a=>{h+='<div class="al r">'+a+'</div>'});
+  if(grade>=3&&!alerts.length)h+='<div class="al r">🚨 Grade≥3 แจ้ง Risk Owner/แพทย์</div>';
+
+  // ═══ REASSESSMENT COMPARISON CARD ═══
+  const curHN=V("fHN").trim();
+  const visitNum=getVisitNumber(curHN);
+  if(visitNum>1&&_patientHistory&&_patientHistory.length){
+    const prev=_patientHistory[_patientHistory.length-1];
+    const prevCol=gc(prev.grade);
+    const trend=grade<prev.grade?"better":grade>prev.grade?"worse":"same";
+    const trendTxt=trend==="better"?"⬇ อาการดีขึ้น":trend==="worse"?"⬆ อาการแย่ลง":"➡ อาการคงเดิม";
+    const trendClr=trend==="better"?"var(--gn)":trend==="worse"?"var(--rd)":"var(--yw)";
+
+    h+='<div class="cd" style="border-color:rgba(45,156,219,.4);background:rgba(45,156,219,.03)">';
+    h+='<div class="cd-t" style="color:#2d9cdb">🔄 การประเมินครั้งที่ '+visitNum+' — เปรียบเทียบ</div>';
+    // Grade comparison
+    h+='<div style="display:flex;align-items:center;justify-content:center;gap:12px;margin:8px 0">';
+    h+='<div style="text-align:center"><div style="font-size:9px;color:var(--dm)">ครั้งก่อน</div><div style="font-size:32px;font-weight:800;font-family:monospace;color:'+prevCol+'">'+prev.grade+'</div><div style="font-size:9px;color:'+prevCol+'">'+prev.labelTh+'</div></div>';
+    h+='<div style="font-size:24px;color:'+trendClr+'">→</div>';
+    h+='<div style="text-align:center"><div style="font-size:9px;color:var(--dm)">ครั้งนี้</div><div style="font-size:32px;font-weight:800;font-family:monospace;color:'+col+'">'+grade+'</div><div style="font-size:9px;color:'+col+'">'+labelTh+'</div></div>';
+    h+='</div>';
+    h+='<div style="text-align:center;margin-bottom:8px"><span class="fu-trend '+trend+'" style="font-size:11px">'+trendTxt+'</span></div>';
+    // Photo comparison
+    if(prev.photo&&(summaryImg||photoData)){
+      h+='<div class="fu-compare">';
+      h+='<div class="fu-compare-card"><img src="'+prev.photo+'"><div class="fu-compare-label" style="color:'+prevCol+'">ครั้งที่ '+(visitNum-1)+' (G'+prev.grade+') '+prev.ts+'</div></div>';
+      h+='<div class="fu-compare-card"><img src="'+(summaryImg||photoData)+'"><div class="fu-compare-label" style="color:'+col+'">ครั้งที่ '+visitNum+' (G'+grade+') '+ts+'</div></div>';
+      h+='</div>';
+    }
+    // Pain Score comparison
+    const prevPain=typeof prev.painScore==="number"?prev.painScore:-1;
+    const curPain=painScore;
+    if(prevPain>=0&&curPain>=0){
+      const painDiff=curPain-prevPain;
+      const painTrend=painDiff<0?"better":painDiff>0?"worse":"same";
+      const painTrendTxt=painTrend==="better"?"ปวดลดลง "+Math.abs(painDiff)+" ระดับ":painTrend==="worse"?"ปวดเพิ่มขึ้น "+Math.abs(painDiff)+" ระดับ":"ปวดเท่าเดิม";
+      const painFaces=["😊","🙂","😐","😕","😣","😖","😫","😰","😭","🤯","💀"];
+      h+='<div style="margin-top:10px;padding:10px 12px;background:var(--bg);border:1px solid var(--bd);border-radius:var(--rs)">';
+      h+='<div style="font-size:9px;font-weight:700;color:var(--dm);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">😣 เปรียบเทียบระดับความเจ็บปวด (NRS)</div>';
+      h+='<div style="display:flex;align-items:center;justify-content:center;gap:12px">';
+      // Previous pain
+      h+='<div style="text-align:center"><div style="font-size:9px;color:var(--dm)">ครั้งก่อน</div>';
+      h+='<div style="font-size:28px">'+(painFaces[prevPain]||"❓")+'</div>';
+      h+='<div style="font-size:18px;font-weight:800;font-family:monospace;color:'+(prevPain>=7?"var(--rd)":prevPain>=4?"var(--yw)":"var(--gn)")+'">'+prevPain+'</div>';
+      h+='<div style="font-size:8px;color:var(--dm)">/10</div></div>';
+      // Arrow
+      const painArrowClr=painTrend==="better"?"var(--gn)":painTrend==="worse"?"var(--rd)":"var(--yw)";
+      h+='<div style="display:flex;flex-direction:column;align-items:center;gap:2px">';
+      h+='<div style="font-size:20px;color:'+painArrowClr+'">'+(painTrend==="better"?"↘":"↗")+'</div>';
+      h+='<div style="font-size:8px;font-weight:700;color:'+painArrowClr+'">'+(painDiff>0?"+":"")+painDiff+'</div></div>';
+      // Current pain
+      h+='<div style="text-align:center"><div style="font-size:9px;color:var(--dm)">ครั้งนี้</div>';
+      h+='<div style="font-size:28px">'+(painFaces[curPain]||"❓")+'</div>';
+      h+='<div style="font-size:18px;font-weight:800;font-family:monospace;color:'+(curPain>=7?"var(--rd)":curPain>=4?"var(--yw)":"var(--gn)")+'">'+curPain+'</div>';
+      h+='<div style="font-size:8px;color:var(--dm)">/10</div></div>';
+      h+='</div>';
+      // Trend label
+      h+='<div style="text-align:center;margin-top:6px"><span class="fu-trend '+painTrend+'" style="font-size:10px">'+(painTrend==="better"?"✅ "+painTrendTxt:painTrend==="worse"?"⚠️ "+painTrendTxt:"➡ "+painTrendTxt)+'</span></div>';
+      h+='</div>';
+    }
+
+    // Cap Refill + Edema comparison
+    const prevCap=prev.capSec;const curCap=capSec;
+    const prevEdema=prev.edemaCm;const curEdema=edemaCm;
+    if((prevCap!=null&&curCap!=null)||(prevEdema!=null&&curEdema!=null)){
+      h+='<div style="display:flex;gap:6px;margin-top:8px">';
+      if(prevCap!=null&&curCap!=null){
+        const capTrend=curCap<prevCap?"better":curCap>prevCap?"worse":"same";
+        h+='<div style="flex:1;padding:8px;background:var(--bg);border:1px solid var(--bd);border-radius:var(--rs);text-align:center;font-size:10px">';
+        h+='<div style="font-size:8px;color:var(--dm);font-weight:700">⏱ Cap Refill</div>';
+        h+='<div style="font-weight:800;color:'+(capTrend==="better"?"var(--gn)":capTrend==="worse"?"var(--rd)":"var(--yw)")+'">'+prevCap.toFixed(1)+'s → '+curCap.toFixed(1)+'s</div></div>';
+      }
+      if(prevEdema!=null&&curEdema!=null){
+        const edTrend=parseFloat(curEdema)<parseFloat(prevEdema)?"better":parseFloat(curEdema)>parseFloat(prevEdema)?"worse":"same";
+        h+='<div style="flex:1;padding:8px;background:var(--bg);border:1px solid var(--bd);border-radius:var(--rs);text-align:center;font-size:10px">';
+        h+='<div style="font-size:8px;color:var(--dm);font-weight:700">📐 Edema</div>';
+        h+='<div style="font-weight:800;color:'+(edTrend==="better"?"var(--gn)":edTrend==="worse"?"var(--rd)":"var(--yw)")+'">'+prevEdema+'cm → '+curEdema+'cm</div></div>';
+      }
+      h+='</div>';
+    }
+
+    // Symptom changes
+    const prevSyms=prev.syms||[];const curSyms=syms||[];
+    const newSyms=curSyms.filter(s=>!prevSyms.includes(s));
+    const goneSyms=prevSyms.filter(s=>!curSyms.includes(s));
+    if(newSyms.length||goneSyms.length){
+      h+='<div style="margin-top:8px;font-size:10px">';
+      if(goneSyms.length)h+='<div style="color:var(--gn);margin-bottom:2px">✅ หายแล้ว: '+goneSyms.join(", ")+'</div>';
+      if(newSyms.length)h+='<div style="color:var(--rd)">🆕 เพิ่มใหม่: '+newSyms.join(", ")+'</div>';
+      h+='</div>';
+    }
+    h+='</div>';
+  }
+
+  const gradeExplain={0:{icon:"✅",color:"var(--gn)",title:"ปกติ",desc:"ไม่พบความผิดปกติ สังเกตต่อ"},1:{icon:"🟢",color:"var(--gn)",title:"เล็กน้อย",desc:"อาการ 1-2 อย่าง สังเกต 2-4 ชม."},2:{icon:"🟡",color:"var(--yw)",title:"ปานกลาง — เปลี่ยน IV",desc:"อาการชัดเจน ต้องเปลี่ยนตำแหน่ง IV"},3:{icon:"🟠",color:"var(--or)",title:"รุนแรง — แจ้งแพทย์",desc:"หยุด IV + แจ้งแพทย์ + รักษาตาม guideline"},4:{icon:"🔴",color:"var(--rd)",title:"รุนแรงมาก — แจ้งแพทย์ทันที",desc:"ดำเนินการฉุกเฉิน + consult แพทย์เฉพาะทาง"},5:{icon:"🚨",color:"var(--rd)",title:"วิกฤต — Thrombophlebitis+ไข้",desc:"หยุด IV + Blood C/S + รักษาเร่งด่วน"}};
+  const ge=gradeExplain[Math.min(grade,5)];
+  h+='<div class="cd" style="border-color:'+ge.color+';border-width:2px"><div style="display:flex;gap:8px;align-items:center"><div style="font-size:24px">'+ge.icon+'</div><div><div style="font-size:13px;font-weight:800;color:'+ge.color+'">Grade '+grade+' — '+ge.title+'</div><div style="font-size:11px;color:var(--tx);margin-top:2px">'+ge.desc+'</div></div></div></div>';
+
+  h+='<div class="cd"><div class="cd-t">📋 สิ่งที่ต้องทำตอนนี้</div><div style="font-size:11px;line-height:1.5">';
+  mgmt.forEach((m,i)=>{const isU=m.includes("หยุด")||m.includes("แพทย์")||m.includes("ห้าม")||m.includes("Antidote");h+='<div style="display:flex;gap:6px;padding:6px 8px;background:'+(isU?"rgba(255,56,96,.06)":"var(--bg)")+';border:1px solid '+(isU?"rgba(255,56,96,.2)":"var(--bd)")+';border-radius:8px;margin-bottom:4px;align-items:flex-start"><div style="min-width:22px;height:22px;border-radius:50%;background:'+(isU?"var(--rd)":"var(--ac)")+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0">'+(i+1)+'</div><div>'+m+'</div></div>'});
+  h+='</div></div>';
+
+  if(summaryImg)h+='<div class="cd"><div class="cd-t">📸 ภาพสรุป + ตำแหน่ง Lesion</div><img src="'+summaryImg+'" style="width:100%;border-radius:10px;border:1px solid var(--bd)"><div style="font-size:9px;color:var(--dm);margin-top:4px">💡 กดค้างบนภาพเพื่อบันทึกลงเครื่อง</div></div>';
+
+  // Copy report panel
+  h+='<div class="cd" style="border-color:var(--ac)"><div class="cd-t">📋 รายงานสรุป — กด Copy แล้ววางใน LINE</div>';
+  h+='<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><b style="font-size:10px;color:var(--yw)">💬 รายงานสั้น</b><button class="dbtn ac" onclick="copyTxt(this,0)">📋 Copy</button></div>';
+  h+='<div style="background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:6px 8px;font-size:10px;line-height:1.5;white-space:pre-wrap;max-height:100px;overflow-y:auto;color:var(--tx)" id="rptBrief">'+briefReport.replace(/\n/g,"<br>")+'</div></div>';
+  h+='<div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><b style="font-size:10px;color:var(--ac)">📄 รายงานเต็ม</b><button class="dbtn ac" onclick="copyTxt(this,1)">📋 Copy</button></div>';
+  h+='<div style="background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:6px 8px;font-size:9px;line-height:1.4;white-space:pre-wrap;max-height:120px;overflow-y:auto;color:var(--tx)" id="rptFull">'+fullReport.replace(/\n/g,"<br>")+'</div></div></div>';
+
+  h+='<div class="cd"><div class="cd-t">📅 ถ่ายรูปติดตาม</div><div style="font-size:10px">';
+  followups.forEach(f=>{const fTime=new Date(now.getTime()+f.hr*3600000);const fts=fTime.toLocaleString("th-TH",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false});h+='<div style="display:flex;gap:6px;padding:5px 6px;background:var(--bg);border:1px solid var(--bd);border-radius:8px;margin-bottom:3px;align-items:center"><div style="min-width:44px;font-weight:700;color:var(--ac);font-family:monospace;font-size:10px">'+f.label+'</div><div><span style="font-weight:600">'+f.desc+'</span> <span style="color:var(--dm)">⏰'+fts+'</span></div></div>'});
+  h+='</div></div>';
+
+  h+='<div class="cd"><div class="cd-t" style="cursor:pointer" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">📋 ข้อมูลการประเมิน ▼</div><div style="display:none">';
+  [["🕐",ts],["HN",V("fHN")],["ผู้ป่วย",V("fNm")],["Ward",V("fWd")],["IV Site",V("fSt")],["สารน้ำ/ยา",V("fFl")+(drugMatch?" ("+drugMatch.level+")":"")],["Grade","Grade "+grade],["ผู้ประเมิน",V("fAs")||"-"]].forEach(r=>{h+='<div class="dr"><span class="dr-l">'+r[0]+'</span><span class="dr-v">'+r[1]+'</span></div>'});
+  h+='</div></div>';
+
+  $("resBox").innerHTML=h;
+  window._reportTexts={brief:briefReport,full:fullReport};
+  window._res={grade,labelTh,action,scaleName,alerts,mgmt,syms,painScore,capSec,edemaCm,ts,photo:summaryImg||photoData,followups,briefReport,fullReport,visitNum:getVisitNumber(V("fHN").trim()),form:{hn:V("fHN"),name:V("fNm"),ward:V("fWd"),bed:V("fBd"),site:V("fSt"),fluid:V("fFl"),gauge:V("fGg"),ins:V("fIn"),assessor:V("fAs"),license:V("fLc"),notes:V("fNt")},drugMatch:drugMatch?drugMatch.name:null};
+  // Show cloud save button if connected
+  if(BACKEND_URL)$("cloudSaveBox").classList.remove("hidden");
+}
+
+// === COPY REPORT TEXT ===
+function copyTxt(btn,type){
+  const txt=type===0?window._reportTexts.brief:window._reportTexts.full;
+  navigator.clipboard.writeText(txt).then(()=>{
+    btn.textContent="✅ Copied!";btn.style.background="var(--gn)";btn.style.color="#fff";
+    setTimeout(()=>{btn.textContent="📋 Copy";btn.style.background="";btn.style.color=""},2000);
+  }).catch(()=>{const ta=document.createElement("textarea");ta.value=txt;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);toast("✅ คัดลอกแล้ว","ok")});
+}
+
+// === SAVE ===
+function saveRec(){
+  const r=window._res;if(!r)return;
+  const rec={id:Date.now().toString(36)+Math.random().toString(36).substr(2,4),hospital:getHospName(),...r};
+  records.unshift(rec);try{localStorage.setItem("ivcb4",JSON.stringify(records))}catch(e){}updCnt();
+  // Save hospital preference
+  try{localStorage.setItem("ivcb_hosp",V("fHosp"));if(V("fHosp")==="custom")localStorage.setItem("ivcb_hosp_custom",V("fHospCustom"))}catch(e){}
+  // Auto-download report image
+  if(r.photo){
+    try{
+      const a=document.createElement("a");
+      a.href=r.photo;
+      a.download="IV-Report_"+(r.form.hn||"")+"_G"+r.grade+"_"+r.ts.replace(/[\/: ]/g,"-")+".jpg";
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+    }catch(e){}
+  }
+  toast("✅ บันทึกสำเร็จ! Grade "+rec.grade+" — "+rec.labelTh,"ok");
+  // Auto cloud save if connected
+  if(BACKEND_URL){saveToCloud(rec)}
+  resetForm();goTab("l");
+}
+function resetForm(){step=1;showStep(1);painScore=-1;photoData=null;ovalData=null;ovalConfirmed=false;capState="idle";capSec=null;_patientHistory=null;["fHN","fNm","fBd","fFl","fNt","fAs","fLc","fEd"].forEach(id=>$(id).value="");["fWd","fSt","fGg"].forEach(id=>$(id).value="");$("fIn").valueAsDate=new Date();document.querySelectorAll(".sym").forEach(s=>s.classList.remove("on"));document.querySelectorAll(".face").forEach(f=>f.classList.remove("on"));$("painAl").className="hidden";$("drugAlertBox").innerHTML="";$("drugDrop").style.display="none";$("fuPanel").className="hidden";$("fuPanel").innerHTML="";retake();$("capC").className="timer-c";$("capT").textContent="0.0";$("capR").innerHTML="";$("capH").textContent="แตะเพื่อเริ่ม → แตะอีกครั้งเมื่อสีกลับ";$("capTimerArea").style.display="none";["capNorm","capAbn","capManual"].forEach(id=>$(id).classList.remove("ac"));$("ovalMeasure").textContent="-- ยังไม่ได้วง --"}
+function updCnt(){$("cnt").textContent=records.length}
+
+// === RECORDS ===
+function renderRecs(){const c=$("recL");if(!records.length){c.innerHTML='<div style="text-align:center;padding:40px"><div style="font-size:40px;opacity:.35">📋</div><div style="font-size:13px;color:var(--dm)">ยังไม่มีบันทึก</div></div>';return}c.innerHTML=records.map(r=>'<div class="rec" onclick="showDet(\''+r.id+'\')"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><div style="font-size:13px;font-weight:700">'+r.form.name+'</div><div style="padding:2px 7px;border-radius:12px;font-size:10px;font-weight:800;font-family:monospace;background:'+gc(r.grade)+'15;color:'+gc(r.grade)+';border:1px solid '+gc(r.grade)+'30">G'+r.grade+'</div></div><div style="display:flex;gap:10px;font-size:10px;color:var(--dm)"><span>🏷 '+r.form.hn+'</span><span>🏥 '+r.form.ward+'</span><span>🕐 '+r.ts+'</span></div></div>').join("")}
+
+function showDet(id){const r=records.find(x=>x.id===id);if(!r)return;const c=gc(r.grade);let h='<button class="btn btn-o" style="width:auto;padding:7px 12px;font-size:11px;margin-bottom:10px" onclick="goTab(\'l\')">← กลับ</button><div class="gbox" style="background:'+c+'12;border:2px solid '+c+'"><div class="gnum" style="color:'+c+'">'+r.grade+'</div><div class="glbl" style="color:'+c+'">'+r.labelTh+'</div><div class="gscl">'+r.scaleName+'</div><div class="gact">'+r.action+'</div></div>';if(r.alerts)r.alerts.forEach(a=>{h+='<div class="al r">'+a+'</div>'});if(r.photo)h+='<div class="cd"><div class="cd-t">📸 ภาพสรุป</div><img src="'+r.photo+'" style="width:100%;border-radius:10px"></div>';h+='<div class="cd"><div class="cd-t">📋 รายละเอียด</div>';[["🕐",r.ts],["HN",r.form.hn],["ผู้ป่วย",r.form.name],["Ward",r.form.ward],["สารน้ำ/ยา",r.form.fluid+(r.drugMatch?" ⚠️":"")],["Pain",r.painScore+"/10"],["Edema",r.edemaCm?r.edemaCm+"cm":"N/A"],["อาการ",(r.syms||[]).join(", ")],["ผู้ประเมิน",r.form.assessor||"-"]].forEach(x=>{h+='<div class="dr"><span class="dr-l">'+x[0]+'</span><span class="dr-v">'+x[1]+'</span></div>'});h+='</div>';h+='<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">';
+  h+='<button class="btn btn-p" style="flex:1;min-width:45%" onclick="exportAsImage(\''+r.id+'\')">📸 Export ภาพ</button>';
+  h+='<button class="btn btn-o" style="flex:1;min-width:45%" onclick="showCopyPanel(\''+r.id+'\')">📋 Copy รายงาน</button>';
+  h+='<button class="btn btn-d" style="flex:0;min-width:50px" onclick="delRec(\''+r.id+'\')">🗑</button>';
+  h+='</div>';
+  $("detB").innerHTML=h;goTab("d")}
+
+function delRec(id){if(!confirm("ยืนยันลบ?")){return}records=records.filter(r=>r.id!==id);try{localStorage.setItem("ivcb4",JSON.stringify(records))}catch(e){}updCnt();toast("🗑 ลบรายการแล้ว","ok");goTab("l")}
+
+function exportAsImage(id){
+  const r=records.find(x=>x.id===id);if(!r)return;
+  const W=800,pad=20,col=gc(r.grade);
+  const mgmtH=(r.mgmt?r.mgmt.length:0)*22+40;
+  const fuH=(r.followups?r.followups.length:0)*20+40;
+  const photoH=r.photo?320:0;
+  const dataH=260;
+  const H=pad+90+pad+photoH+pad+dataH+pad+mgmtH+pad+fuH+pad+60;
+
+  const cvs=document.createElement("canvas");cvs.width=W;cvs.height=H;
+  const ctx=cvs.getContext("2d");
+
+  // BG
+  ctx.fillStyle="#071520";ctx.fillRect(0,0,W,H);
+  let y=pad;
+
+  // Header
+  ctx.fillStyle="#0c1f30";ctx.fillRect(0,0,W,80);
+  ctx.fillStyle=col;ctx.font="bold 48px sans-serif";ctx.fillText("Grade "+r.grade,pad,50);
+  ctx.fillStyle="#fff";ctx.font="bold 18px sans-serif";ctx.fillText(r.labelTh,pad+200,35);
+  ctx.font="14px sans-serif";ctx.fillStyle="#00e8b5";ctx.fillText(r.scaleName,pad+200,55);
+  ctx.fillStyle="#506a85";ctx.font="11px sans-serif";ctx.fillText("IV Care Buddy v5.0 | "+r.ts+(r.visitNum?" | ประเมินครั้งที่ "+r.visitNum:""),pad,72);
+  y=90;
+
+  // Photo
+  if(r.photo){
+    const img=new Image();img.src=r.photo;
+    try{
+      const pw=W-pad*2,ph=300;
+      ctx.drawImage(img,pad,y,pw,ph);
+      ctx.strokeStyle="#1a3352";ctx.lineWidth=1;ctx.strokeRect(pad,y,pw,ph);
+    }catch(e){}
+    y+=320;
+  }
+
+  // Patient Info Section
+  ctx.fillStyle="#0c1f30";ctx.fillRect(pad,y,W-pad*2,dataH);
+  ctx.strokeStyle="#1a3352";ctx.lineWidth=1;ctx.strokeRect(pad,y,W-pad*2,dataH);
+  ctx.fillStyle="#00e8b5";ctx.font="bold 12px sans-serif";ctx.fillText("📋 ข้อมูลการประเมิน",pad+12,y+18);
+  let dy=y+34;
+  ctx.font="13px sans-serif";
+  const rows=[
+    ["HN",r.form.hn],["ผู้ป่วย",r.form.name],["Ward",r.form.ward+(r.form.bed?" Bed:"+r.form.bed:"")],
+    ["IV Site",r.form.site],["สารน้ำ/ยา",r.form.fluid+(r.drugMatch?" ⚠️ "+r.drugMatch:"")],
+    ["Gauge",r.form.gauge],["Pain Score",r.painScore+"/10"],
+    ["Cap Refill",r.capSec?r.capSec.toFixed(1)+"s":"N/A"],
+    ["Edema",r.edemaCm?r.edemaCm+" cm":"N/A"],
+    ["อาการ",(r.syms||[]).slice(0,6).join(", ")],
+    ["ผู้ประเมิน",r.form.assessor||"-"],["เลข ว.",r.form.license||"-"],
+  ];
+  rows.forEach(row=>{
+    ctx.fillStyle="#506a85";ctx.fillText(row[0],pad+12,dy);
+    ctx.fillStyle="#dfe8f2";ctx.fillText(row[1],pad+120,dy);
+    dy+=19;
+  });
+  y+=dataH+pad;
+
+  // Management Plan
+  if(r.mgmt&&r.mgmt.length){
+    ctx.fillStyle="#0c1f30";ctx.fillRect(pad,y,W-pad*2,mgmtH);
+    ctx.strokeStyle="#1a3352";ctx.strokeRect(pad,y,W-pad*2,mgmtH);
+    ctx.fillStyle="#00e8b5";ctx.font="bold 12px sans-serif";ctx.fillText("📋 Management Plan",pad+12,y+18);
+    let my=y+36;
+    ctx.font="11px sans-serif";ctx.fillStyle="#dfe8f2";
+    r.mgmt.forEach(m=>{
+      const clean=m.replace(/[🛑💉🚫📞🔄🧪🔴🔵🟡⬆️📝📋⚠️👁️📸🩹]/g,"").trim();
+      ctx.fillText("• "+clean.substring(0,70),pad+12,my);my+=20;
+    });
+    y+=mgmtH+pad;
+  }
+
+  // Follow-up
+  if(r.followups&&r.followups.length){
+    ctx.fillStyle="#0c1f30";ctx.fillRect(pad,y,W-pad*2,fuH);
+    ctx.strokeStyle="#1a3352";ctx.strokeRect(pad,y,W-pad*2,fuH);
+    ctx.fillStyle="#00e8b5";ctx.font="bold 12px sans-serif";ctx.fillText("📅 Follow-up Schedule",pad+12,y+18);
+    let fy=y+36;
+    ctx.font="11px sans-serif";
+    r.followups.forEach(f=>{
+      ctx.fillStyle="#00e8b5";ctx.fillText(f.label,pad+12,fy);
+      ctx.fillStyle="#dfe8f2";ctx.fillText(f.desc,pad+70,fy);
+      fy+=18;
+    });
+    y+=fuH+pad;
+  }
+
+  // Footer
+  ctx.fillStyle="#506a85";ctx.font="10px sans-serif";
+  ctx.fillText("IV Care Buddy v5.0 | Generated: "+new Date().toLocaleString("th-TH")+" | "+r.form.assessor,pad,y+10);
+
+  // Alerts bar
+  if(r.grade>=3){
+    ctx.fillStyle=col;ctx.fillRect(0,80,W,4);
+  }
+
+  cvs.toBlob(function(blob){
+    if(!blob)return;
+    const url=URL.createObjectURL(blob);
+    const fname="IV-Care-Buddy_"+r.form.hn+"_G"+r.grade+"_"+(r.ts.replace(/[\/: ]/g,"-"))+".jpg";
+    if(navigator.share&&navigator.canShare){
+      const file=new File([blob],fname,{type:"image/jpeg"});
+      if(navigator.canShare({files:[file]})){
+        navigator.share({title:"IV Care Buddy Grade "+r.grade,text:"HN:"+r.form.hn+" | "+r.form.name+" | Grade "+r.grade+" "+r.labelTh,files:[file]}).catch(()=>fallbackDownload(url,fname));
+        return;
+      }
+    }
+    fallbackDownload(url,fname);
+  },"image/jpeg",0.92);
+}
+
+function fallbackDownload(url,fname){
+  const a=document.createElement("a");a.href=url;a.download=fname;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),5000);
+  toast("✅ ภาพบันทึกลงเครื่องแล้ว\n📁 "+fname,"ok");
+}
+
+function showCopyPanel(id){
+  const r=records.find(x=>x.id===id);if(!r)return;
+  const brief="🚨 IV Complication Report\n"+
+    "👤 "+r.form.name+" HN:"+r.form.hn+"\n"+
+    "🏥 "+r.form.ward+" | "+r.form.site+" | "+r.form.fluid+"\n"+
+    "📊 Grade "+r.grade+" "+r.labelTh+" ("+r.scaleName+")\n"+
+    "😣 Pain:"+r.painScore+"/10"+(r.capSec?" | Cap:"+r.capSec.toFixed(1)+"s":"")+"\n"+
+    "⚡ "+r.action+"\n"+
+    "🕐 "+r.ts+" | 👩‍⚕️ "+(r.form.assessor||"-");
+
+  let full="🏥 IV Care Buddy — Full Report\n━━━━━━━━━━━━━━━\n";
+  full+="🕐 "+r.ts+"\n👤 HN: "+r.form.hn+" | "+r.form.name+"\n";
+  full+="🏥 "+r.form.ward+(r.form.bed?" Bed:"+r.form.bed:"")+"\n";
+  full+="📍 IV Site: "+r.form.site+"\n💊 "+r.form.fluid+(r.drugMatch?" ⚠️HIGH ALERT: "+r.drugMatch:"")+" | "+r.form.gauge+"\n";
+  full+="📅 วันแทง IV: "+r.form.ins+"\n";
+  full+="━━━━━━━━━━━━━━━\n";
+  full+="📊 "+r.scaleName+"\n🔴 Grade "+r.grade+" — "+r.labelTh+"\n";
+  full+="😣 Pain: "+r.painScore+"/10\n";
+  full+="⏱ Cap Refill: "+(r.capSec?r.capSec.toFixed(1)+"s":"N/A")+"\n";
+  full+="📐 Edema: "+(r.edemaCm?r.edemaCm+"cm":"N/A")+"\n";
+  full+="📝 อาการ: "+(r.syms||[]).join(", ")+"\n";
+  if(r.mgmt&&r.mgmt.length){full+="━━━━━━━━━━━━━━━\n📋 MANAGEMENT PLAN:\n";r.mgmt.forEach(m=>{full+=m+"\n"})}
+  if(r.followups&&r.followups.length){full+="━━━━━━━━━━━━━━━\n📅 FOLLOW-UP:\n";r.followups.forEach(f=>{full+=f.label+": "+f.desc+"\n"})}
+  full+="━━━━━━━━━━━━━━━\n👩‍⚕️ ผู้ประเมิน: "+(r.form.assessor||"-")+" | ว."+(r.form.license||"-");
+  if(r.form.notes)full+="\n📝 หมายเหตุ: "+r.form.notes;
+
+  let p='<div class="cd" style="border-color:var(--ac)">';
+  p+='<div class="cd-t">📋 เลือกรูปแบบรายงาน</div>';
+  p+='<div style="margin-bottom:10px">';
+  p+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><b style="font-size:12px;color:var(--yw)">💬 รายงานสั้น (สำหรับ LINE กลุ่ม)</b><button class="dbtn ac" onclick="doCopy(\'brief\',\''+id+'\')">📋 Copy</button></div>';
+  p+='<div id="prevBrief" style="background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;font-size:11px;line-height:1.6;white-space:pre-wrap;color:var(--tx);max-height:120px;overflow-y:auto">'+brief.replace(/\n/g,"<br>")+'</div>';
+  p+='</div>';
+  p+='<div style="margin-bottom:10px">';
+  p+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><b style="font-size:12px;color:var(--ac)">📄 รายงานเต็ม (ครบทุกรายละเอียด)</b><button class="dbtn ac" onclick="doCopy(\'full\',\''+id+'\')">📋 Copy</button></div>';
+  p+='<div id="prevFull" style="background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;font-size:10px;line-height:1.5;white-space:pre-wrap;color:var(--tx);max-height:180px;overflow-y:auto">'+full.replace(/\n/g,"<br>")+'</div>';
+  p+='</div>';
+  p+='<button class="btn btn-o" style="margin-top:4px" onclick="shareText(\''+id+'\')">📤 Share ผ่าน LINE / App อื่น</button>';
+  p+='</div>';
+
+  const detB=$("detB");
+  const existing=document.getElementById("copyPanel");
+  if(existing)existing.remove();
+  const div=document.createElement("div");div.id="copyPanel";div.innerHTML=p;
+  detB.appendChild(div);
+  div.scrollIntoView({behavior:"smooth"});
+  window._copyTexts={brief,full};
+}
+
+function doCopy(type,id){
+  const txt=window._copyTexts[type];
+  if(!txt)return;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=event.target;
+    btn.textContent="✅ Copied!";btn.style.background="var(--gn)";btn.style.borderColor="var(--gn)";btn.style.color="#fff";
+    setTimeout(()=>{btn.textContent="📋 Copy";btn.style.background="";btn.style.borderColor="";btn.style.color=""},2000);
+  }).catch(()=>{
+    const ta=document.createElement("textarea");ta.value=txt;ta.style.position="fixed";ta.style.opacity="0";
+    document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);
+    toast("✅ คัดลอกแล้ว — วางใน LINE ได้เลย","ok");
+  });
+}
+
+function shareText(id){
+  const r=records.find(x=>x.id===id);if(!r)return;
+  const txt=window._copyTexts?window._copyTexts.brief:"Grade "+r.grade+" "+r.labelTh;
+  if(navigator.share)navigator.share({title:"IV Care Buddy G"+r.grade,text:txt}).catch(()=>{});
+  else doCopy("brief",id);
+}
+
+// Fix any orphan content showing outside views
+document.querySelectorAll('.wrap > .cd').forEach(el=>el.style.display='none');
+
+init();
+</script>
+</body>
+</html>
